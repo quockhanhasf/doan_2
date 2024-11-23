@@ -1,0 +1,2 @@
+class Sanpham < ApplicationRecord
+end

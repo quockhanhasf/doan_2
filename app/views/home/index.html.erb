@@ -1,0 +1,283 @@
+  <!DOCTYPE html>
+  <html lang="en">
+  <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Trang chủ</title>
+    <%= csrf_meta_tags %>
+    <%= stylesheet_link_tag 'home', media: 'all' %>
+    <style>
+      .hidden {
+        display: none;
+      }
+    </style>
+  </head>
+  <body >
+    
+  <!-- Navbar -->
+<div class="navbar">
+  <div class="menu">
+    <%= link_to 'Trang Chủ', root_path, id: 'homeLink', data: { turbo: false } %>
+    <div class="search-bar">
+      <input type="text" placeholder="Tìm kiếm sản phẩm..." id="searchInput" class="text_tim">
+      <button class="btn_tim" onclick="searchProduct()">Tìm Kiếm</button>
+    </div>
+
+    <div class="cart-container">
+      <% if current_user %>
+        <% cart = current_user.giohang.present? ? JSON.parse(current_user.giohang) : {} %>
+        <% product_count = cart.keys.size %> <!-- Đếm số lượng sản phẩm (số key) -->
+        <%= link_to image_tag('giohang.png', alt: 'Cart', class: 'cart-icon'), cart_path %>
+      <% else %>
+        <a href="#" onclick="showLoginAlert(event)">
+          <%= image_tag('giohang.png', alt: 'Cart', class: 'cart-icon') %>
+        </a>
+      <% end %>
+      <span class="cart-badge"><%= product_count || 0 %></span> <!-- Hiển thị số lượng sản phẩm -->
+    </div>
+
+
+
+
+    <% if current_user %>
+      <%= link_to current_user.hoten, user_path(current_user), class: 'user-link' %> <!-- Redirect to user's profile -->
+    <% else %>
+      <%= link_to 'Đăng nhập', '#', class: 'login-button' %> <!-- Hiển thị nút Login nếu chưa đăng nhập -->
+    <% end %>
+  </div>
+</div>
+
+
+  <!-- Phần phân loại sản phẩm -->
+  <div class="product-categories">
+    <div class="category-item">
+      <%= image_tag 'raucu.jpg', alt: 'Rau, củ, quả', class: 'category-image' %>
+      <p>Rau, củ, quả</p>
+    </div>
+    <div class="category-item">
+      <%= image_tag 'sua.jpg', alt: 'Sữa tươi', class: 'category-image' %>
+      <p>Sữa tươi</p>
+    </div>
+    <div class="category-item">
+      <%= image_tag 'gao.jpg', alt: 'Gạo các loại', class: 'category-image' %>
+      <p>Gạo các loại</p>
+    </div>
+    <div class="category-item">
+      <%= image_tag 'thit.jpg', alt: 'Thịt', class: 'category-image' %>
+      <p>Thịt</p>
+    </div>
+    <!-- Thêm các danh mục khác tương tự -->
+  </div>
+
+
+  <!-- Modal Login Form -->
+  <div id="loginModal" class="modal" style="display: none;">
+      <div class="modal-content">
+          <span class="close-buttonl" onclick="closeModal()">×</span>
+          <%= render template: 'sessions/new' %> <!-- Render form đăng nhập từ sessions/new.html.erb -->
+      </div>
+  </div>
+
+  <!-- Modal "Thêm vào giỏ hàng" -->
+  <div id="addToCartModal" class="modal" style="display: none;">
+  <div class="modal-contentt">
+    <span class="close-button" onclick="closeAddToCartModal()">×</span>
+    <!-- Phần hiển thị sản phẩm được chọn -->
+    <div id="productPreview"></div>
+    <!-- Thanh trượt số lượng -->
+    <p>Chọn số lượng sản phẩm bạn muốn thêm vào giỏ hàng:</p>
+    <input type="range" id="quantitySlider" min="1" max="20" step="1" value="1" oninput="updateQuantityDisplay(this.value)">
+    <p>Số lượng: <span id="quantityDisplay">1</span></p>
+    <%= button_tag 'Xác nhận', class: 'btn btn-primary confirm-btn', onclick: "addToCart()" %>
+  </div>
+</div>
+
+
+
+    
+    
+    <div class="sanpham" id="productSection">
+      <% Sanpham.all.each do |sanpham| %>
+        <div class="product-card">
+          <%= image_tag asset_path(sanpham.hinhanh), alt: sanpham.ten, class: 'product-image' %>
+          <div class="product-info">
+            <h3 class="product-name"><%= sanpham.ten %></h3>
+            <p class="product-price">
+              <%= number_to_currency(sanpham.gia, unit: "VNĐ", delimiter: ".", format: "%n %u", precision: 0) %>
+              / <%= sanpham.donvi.presence || 'Đơn vị không xác định' %>
+            </p>
+            <!-- Truyền thông tin sản phẩm qua data-* -->
+            <%= button_tag 'Thêm vào giỏ hàng', 
+              class: 'add-to-cart', 
+              data: { 
+                product_name: sanpham.ten,
+                product_image: asset_path(sanpham.hinhanh),
+                product_unit: sanpham.donvi
+              },
+              onclick: "openAddToCartModal(this)" %>
+          </div>
+        </div>
+      <% end %>
+    </div>
+
+
+
+
+    <!-- Footer -->
+    <footer id="footer" class="footer">
+      <div class="footer-content">
+        <div class="footer-section about">
+          <h2>Hỗ Trợ Khách Hàng</h2>
+          <p>Hotline: 1900 1234</p>
+          <p>Email: support@yourshop.com</p>
+        </div>
+        <div class="footer-section stores">
+          <h2>Hệ Thống Cửa Hàng</h2>
+          <p>Cửa hàng 1: 123 Đường ABC, Quận 1, TP.HCM</p>
+          <p>Cửa hàng 2: 456 Đường XYZ, Quận 3, TP.HCM</p>
+        </div>
+        <div class="footer-section policy">
+          <h2>Chính Sách</h2>
+          <ul>
+            <li><%= link_to 'Chính sách đổi trả', '#return-policy' %></li>
+            <li><%= link_to 'Chính sách vận chuyển', '#shipping-policy' %></li>
+            <li><%= link_to 'Chính sách bảo mật', '#privacy-policy' %></li>
+          </ul>
+        </div>
+        <div class="footer-section social-media">
+          <h2>Mạng Xã Hội</h2>
+          <p>
+            <%= link_to 'Facebook', 'https://www.facebook.com', target: '_blank' %> | 
+            <%= link_to 'Instagram', 'https://www.instagram.com', target: '_blank' %> | 
+            <%= link_to 'Twitter', 'https://www.twitter.com', target: '_blank' %>
+          </p>
+        </div>
+      </div>
+    </footer>
+
+    <%= javascript_include_tag 'application' %>
+    <script>
+      const isLoggedIn = <%= current_user.present? ? 'true' : 'false' %>;
+
+      const loginButton = document.querySelector('.login-button');
+      const loginModal = document.getElementById('loginModal');
+      const productSection = document.getElementById('productSection');
+      const footer = document.getElementById('footer');
+
+     
+    if(loginButton){
+      loginButton.addEventListener('click', function() {
+        loginModal.style.display = 'flex'; // Hiển thị modal
+        productSection.style.display = 'none'; // Ẩn phần sản phẩm
+        footer.classList.add('hidden'); // Ẩn footer
+      });
+    }
+      
+
+      function closeModal() {
+        loginModal.style.display = 'none';
+        productSection.style.display = 'flex'; // Hiển thị lại phần sản phẩm
+        footer.classList.remove('hidden'); // Hiển thị lại footer
+      }
+
+
+      function updateQuantityDisplay(value) {
+        const productUnit = document.getElementById('quantityDisplay').getAttribute('data-unit') ; 
+        document.getElementById('quantityDisplay').innerText = `${value} ${productUnit}`;
+      }
+
+
+
+      const addToCartModal = document.getElementById('addToCartModal');
+      const quantityDisplay = document.getElementById('quantityDisplay');
+
+      // Lấy danh sách các nút "Thêm vào giỏ hàng"
+    document.querySelectorAll('.add-to-cart').forEach(button => {
+      button.addEventListener('click', function() {
+        const productName = this.getAttribute('data-product-name'); // Lấy tên sản phẩm
+        openAddToCartModal(productName);
+      });
+    });
+
+    function showLoginAlert(event) {
+      event.preventDefault(); // Ngăn chặn hành động mặc định (truy cập vào giỏ hàng)
+      alert("Bạn cần đăng nhập để truy cập vào giỏ hàng.");
+    }
+
+
+    // Cập nhật hàm mở modal thêm vào giỏ hàng
+        // Hàm mở modal và hiển thị thông tin sản phẩm
+    function openAddToCartModal(button) {
+      if (!isLoggedIn) {
+        alert("Bạn cần đăng nhập để thêm sản phẩm vào giỏ hàng.");
+        return;
+      }
+
+      const productName = button.getAttribute('data-product-name');
+      const productImage = button.getAttribute('data-product-image');
+      const productUnit = button.getAttribute('data-product-unit'); // Lấy đơn vị sản phẩm
+
+      const addToCartModal = document.getElementById('addToCartModal');
+
+      // Xóa thông tin cũ trong modal
+      const oldPreview = document.getElementById('productPreview');
+      if (oldPreview) oldPreview.remove();
+
+      // Tạo nội dung mới cho modal
+      const productPreview = document.createElement('div');
+      productPreview.id = 'productPreview';
+      productPreview.innerHTML = `
+        <img src="${productImage}" alt="${productName}" style="width: 100px; height: auto; display: block; margin: 0 auto;">
+        <h2 style="text-align: center;">${productName}</h2>
+        <p style="text-align: center;">Đơn vị: ${productUnit}</p> <!-- Hiển thị đơn vị -->
+      `;
+
+      const modalContent = addToCartModal.querySelector('.modal-contentt');
+      modalContent.prepend(productPreview); // Thêm vào đầu modal
+
+       // Thêm đơn vị vào thanh hiển thị số lượng
+      const quantityDisplay = document.getElementById('quantityDisplay');
+      quantityDisplay.setAttribute('data-unit', productUnit);
+
+      // Hiển thị modal
+      addToCartModal.style.display = 'flex';
+    }
+
+    // Hàm đóng modal
+    function closeAddToCartModal() {
+      const addToCartModal = document.getElementById('addToCartModal');
+      addToCartModal.style.display = 'none';
+    }
+
+    function addToCart() {
+      const quantity = document.getElementById('quantitySlider').value;
+      const productName = document.getElementById('productPreview').querySelector('h2').innerText;
+
+      fetch('/cart/add_to_cart', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'X-CSRF-Token': document.querySelector('meta[name="csrf-token"]').getAttribute('content')
+        },
+        body: JSON.stringify({ product_name: productName, quantity: quantity })
+      })
+      .then(response => response.json())
+      .then(data => {
+        if (data.success) {
+          alert('Sản phẩm đã được thêm vào giỏ hàng!');
+          closeAddToCartModal();
+        } else {
+          alert(data.error || 'Có lỗi xảy ra, vui lòng thử lại!');
+        }
+      })
+      .catch(error => {
+        alert('Lỗi kết nối, vui lòng thử lại!');
+        console.error('Error:', error);
+      });
+    }
+
+  
+
+    </script>
+  </body>
+  </html>

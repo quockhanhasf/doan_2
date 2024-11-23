@@ -1,0 +1,383 @@
+
+
+body{
+    background-image: url(hinh1.png);
+    background-size: cover; /* Ảnh sẽ bao phủ toàn bộ màn hình */
+    background-repeat: no-repeat; /* Không lặp lại ảnh */
+    background-attachment: fixed; /* Ảnh nền cố định khi cuộn */
+    background-position: center; /* Căn giữa ảnh nền */
+    margin: 0; /* Loại bỏ khoảng cách mặc định */
+    padding: 0;
+}
+/* app/assets/stylesheets/home.css.erb */
+
+/* Căn chỉnh style cho navbar */
+       /* Căn chỉnh style cho navbar */
+       .navbar {
+        background-color: white; /* Nền trắng */
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        padding: 0 10px; /* Padding hai bên */
+        box-shadow: 0 2px 4px rgba(0,0,0,0.1); /* Bóng đổ nhẹ */
+        height: 70px; /* Chiều cao mới cho navbar */
+        width: 100%; /* Chiều rộng toàn màn hình */
+        font-size: 24px;
+        
+    }
+    
+    .navbar a {
+        color: black; /* Màu chữ */
+        text-decoration: none;
+        margin: 0 40px; /* Khoảng cách giữa các mục */
+        font-weight: 800; /* Độ đậm của chữ */
+        font-size: 24px; /* Kích thước chữ */
+    
+    }
+    
+    .navbar a:hover {
+        color: grey; /* Màu khi hover */
+    }
+    
+    /* Logo */
+    .logo {
+        font-size: 24px; /* Kích thước logo */
+        font-weight: bold; /* Độ đậm của logo */
+    }
+    
+    /* Container cho phần mục menu */
+    .menu {
+        display: flex;
+        align-items: center;
+        justify-content: center; /* Căn giữa các mục */
+    }
+    
+    /* Nút login với style nổi bật */
+    .login-button {
+        padding: 8px 20px;
+        background-color: #28a745;
+        color: white;
+        border: none;
+        border-radius: 20px; /* Bo tròn nút */
+        cursor: pointer;
+        font-size: 20px;
+        
+        
+    }
+    
+    .login-button:hover {
+        background-color: rgb(19, 218, 92);
+    }
+    
+    /* Container bao quanh giỏ hàng và số mũ */
+    /* Container for cart icon and badge */
+.cart-container {
+    position: relative;
+    display: inline-block; /* Ensures it aligns with other inline elements */
+    margin-right: 50px;
+    margin-left: 20px;
+    margin-right: 110px;
+    transition: background-color 0.3s ease;
+    cursor: pointer; /* Thể hiện rằng đây là phần có thể click được */
+  }
+
+  .cart-container:hover {
+    background-color: #e0f7fa; /* Màu nền khi hover */
+     transform: scale(1.05);
+  }
+  
+  /* Cart icon styling */
+  .cart-icon {
+    width: 38px;
+    height: auto;
+  }
+  
+  /* Badge styling */
+  .cart-badge {
+    position: absolute;
+    top: -5px; /* Adjust these values to position the badge */
+    right: 20px;
+    background-color: red;
+    color: white;
+    border-radius: 50%;
+    padding: 3px 6px;
+    font-size: 12px;
+  }
+  
+
+    
+    /* Style cho phần hiển thị sản phẩm */
+    .sanpham {
+        display: flex;
+        flex-wrap: wrap;
+        justify-content: center;
+        padding: 20px;
+        gap: 20px; /* Khoảng cách giữa các sản phẩm */
+    }
+    
+    .product-card {
+        width: 200px;
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+        border-radius: 8px;
+        overflow: hidden; /* Ảnh không tràn ra khỏi khung */
+        text-align: center;
+        background-color: #fff;
+    }
+    
+    .product-image {
+        width: 200px;    /* Đặt chiều rộng ảnh là 200px */
+        height: 200px;   /* Đặt chiều cao ảnh là 200px */
+        object-fit: cover; /* Đảm bảo ảnh không bị bóp méo và sẽ cắt bớt nếu cần */
+    }
+    
+    .product-info {
+        padding: 10px;
+    }
+    
+    .product-name {
+        font-size: 16px;
+        color: #333;
+    }
+    
+    .product-price {
+        font-size: 14px;
+        color: #666;
+    }
+    
+    .product-button {
+        padding: 8px 16px;
+        background-color: #007BFF;
+        color: white;
+        border: none;
+        cursor: pointer;
+        border-radius: 4px;
+        margin-top: 10px;
+    }
+    
+    .product-button:hover {
+        background-color: #0056b3;
+    }
+    
+        /* Phần nhập liệu tìm kiếm */
+    .text_tim {
+        padding: 10px 20px; /* Đệm trong cho ô nhập */
+        border: 1px solid #ccc; /* Viền nhạt */
+        border-right: none; /* Loại bỏ viền phải để khít với nút */
+        border-radius: 20px 0 0 20px; /* Bo góc trái */
+        outline: none; /* Không viền khi nhấp vào */
+        font-size: 16px; /* Kích thước chữ */
+        height: 21px; /* Chiều cao nhất quán */
+        width: 200px; /* Chiều rộng của ô nhập */
+        transition: background-color 0.3s, border-color 0.3s; /* Hiệu ứng mượt khi thay đổi màu nền và viền */
+    }
+
+    .text_tim:focus {
+        background-color: #f2f2f2; /* Màu nền nhạt hơn khi nhập */
+        border-color: #007BFF; /* Viền màu xanh khi nhập */
+    }
+
+    /* Nút Tìm Kiếm */
+    .btn_tim {
+        padding: 10px 20px; /* Đệm cho nút */
+        height: 42px; /* Chiều cao nhất quán */
+        border: none; /* Không viền cho nút */
+        background-color: #007BFF; /* Màu nền cho nút */
+        color: white; /* Màu chữ cho nút */
+        border-radius: 0 20px 20px 0; /* Bo góc phải */
+        cursor: pointer; /* Con trỏ khi rê chuột vào nút */
+        transition: background-color 0.3s, box-shadow 0.3s; /* Hiệu ứng mượt khi thay đổi màu nền và đổ bóng */
+        margin-right: 30px;
+    }
+
+    .btn_tim:hover {
+        background-color: #0056b3; /* Màu nền khi hover */
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2); /* Hiệu ứng đổ bóng khi hover */
+    }
+
+    .btn_tim:active {
+        background-color: #004494; /* Màu tối hơn khi nhấn */
+        transform: scale(0.98); /* Nhấn xuống nhẹ khi bấm */
+    }
+
+    /* Đảm bảo hai phần tử nằm ngang khít nhau */
+    .search-bar {
+        display: flex; /* Sắp xếp ngang các phần tử */
+        align-items: center; /* Căn giữa theo chiều dọc */
+    }
+
+    
+    .add-to-cart {
+        padding: 8px 16px;
+        background-color: #28a745; /* Màu xanh lá cho nút thêm vào giỏ */
+        color: white;
+        border: none;
+        border-radius: 4px;
+        cursor: pointer;
+        margin-top: 10px;
+    }
+    
+    .add-to-cart:hover {
+        background-color: #218838; /* Màu sậm hơn khi hover */
+    }
+    
+    /* Style cho Footer */
+    .footer {
+        background-color: #e9ecee;
+        padding: 40px 20px;
+        text-align: left;
+        color: #333;
+        margin-top: 390px;
+        width: 100%; /* Đảm bảo chiều rộng 100% */
+        position: relative; /* Giữ footer nằm trong flow bình thường của tài liệu */
+        left: 0; /* Đảm bảo bắt đầu từ cạnh trái */
+        right: 0; /* Kết thúc ở cạnh phải */
+        box-sizing: border-box; /* Đảm bảo padding không làm tăng kích thước của footer */
+    }
+    
+    
+    .footer-content {
+        display: flex;
+        justify-content: space-around;
+        flex-wrap: wrap;
+    }
+    
+    .footer-section {
+        flex: 1;
+        padding: 10px;
+        min-width: 200px;
+    }
+    
+    .footer-section h2 {
+        font-size: 18px;
+        margin-bottom: 15px;
+        color: #007BFF;
+    }
+    
+    .footer-section p, .footer-section ul, .footer-section a {
+        font-size: 14px;
+        color: #666;
+        text-decoration: none;
+    }
+    
+    .footer-section ul {
+        list-style: none;
+        padding: 0;
+    }
+    
+    .footer-section ul li {
+        margin-bottom: 10px;
+    }
+    
+    .footer-section ul li a:hover {
+        text-decoration: underline;
+        color: #0056b3;
+    }
+    
+    .footer-section .social-media a {
+        margin-right: 10px;
+        color: #007BFF;
+        text-decoration: none;
+    }
+    
+    .footer-section .social-media a:hover {
+        color: #0056b3;
+    }
+    
+    .footer-section a {
+        color: #007BFF;
+    }
+    
+    .footer-section a:hover {
+        text-decoration: underline;
+    }
+    
+    .hidden{
+        display: none;
+    }
+    
+    .product-categories {
+        display: flex;
+        margin-right: -20px;
+        overflow-x: auto;
+        white-space: nowrap;
+        padding: 10px;
+        background-color: #a4eab3; /* Màu nền nhẹ */
+      }
+      
+      .category-item {
+        display: inline-block;
+        text-align: center;
+        margin-right: 50px;
+        flex-shrink: 0;
+        margin-left: 15px;
+        padding: 10px;
+        border-radius: 8px;
+        transition: background-color 0.3s ease, transform 0.3s ease;
+        cursor: pointer; /* Để cho thấy mục này có thể click được */
+      }
+
+      .category-item:hover {
+        background-color: #e0f7fa; /* Thay đổi màu nền khi hover */
+        transform: scale(1.05); /* Phóng to nhẹ khi hover */
+      }
+      
+      .category-item img {
+        width: 120px; /* Kích thước hình ảnh */
+        height: auto;
+      }
+      
+      .category-item p {
+        font-size: 20px;
+        margin-top: 5px;
+      }
+      
+      .modal {
+       
+        display: none; 
+        position: fixed; 
+        top: 0; left: 0; right: 0; bottom: 0;
+        background-color: rgba(0,0,0,0.5);
+        align-items: center;
+        justify-content: center;
+      }
+      .modal-contentt {
+        background-color: #fff;
+        padding: 20px;
+        border-radius: 8px;
+        max-width: 300px;
+        text-align: center;
+      }
+      /* CSS cho nút xác nhận */
+.confirm-btn {
+    max-width: 200px; /* hoặc kích thước tùy chỉnh */
+    padding: 12px;
+    background-color: #16c98d !important; /* Màu nền tùy chỉnh */
+    color: #ffffff !important;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 18px;
+    font-weight: bold;
+    text-align: center;
+    transition: background-color 0.3s ease;
+  }
+  
+  .confirm-btn:hover {
+    background-color: #0a8a64 !important;
+  }
+      
+      
+  .close-button {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    font-size: 30px;
+    color: #f21414;
+    cursor: pointer;
+    transition: color 0.2s ease;
+   
+  }
+  
+  .close-button:hover {
+    color: #a27777;
+  }
