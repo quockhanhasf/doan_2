@@ -205,3 +205,108 @@ tfoot .currency {
 
 
 
+/* Container checkbox */
+.select-product {
+  text-align: center;
+}
+
+input[type="checkbox"] {
+  appearance: none; /* Xóa giao diện mặc định của checkbox */
+  width: 20px;
+  height: 20px;
+  border: 2px solid #ccc;
+  border-radius: 4px; /* Làm bo góc */
+  background-color: #f9f9f9;
+  cursor: pointer;
+  position: relative;
+  transition: all 0.2s ease;
+}
+
+/* Hiển thị dấu check khi được chọn */
+input[type="checkbox"]:checked {
+  background-color: #4caf50;
+  border-color: #4caf50;
+}
+
+input[type="checkbox"]:checked::after {
+  content: '✓'; /* Dấu check */
+  font-size: 14px;
+  color: white;
+  position: absolute;
+  top: 2px;
+  left: 4px;
+}
+
+/* Checkbox hover */
+input[type="checkbox"]:hover {
+  border-color: #888;
+}
+
+/* Style cho checkbox "Chọn tất cả" */
+#selectAll {
+  width: 24px;
+  height: 24px;
+  background-color: #f4f4f4;
+  border: 2px solid #bbb;
+  border-radius: 4px;
+  transition: background-color 0.2s ease, border-color 0.2s ease;
+}
+
+#selectAll:hover {
+  border-color: #777;
+}
+
+#selectAll:checked {
+  background-color: #007bff;
+  border-color: #007bff;
+}
+
+#selectAll:checked::after {
+  content: '✔';
+  font-size: 16px;
+  color: white;
+  position: absolute;
+  top: 2px;
+  left: 6px;
+}
+input[type="checkbox"]:checked {
+  transform: scale(1.1);
+  transition: transform 0.1s ease-in-out;
+}
+
+/* Định dạng cơ bản cho nút đặt hàng */
+.order-button {
+  background-color: #09d1c7; /* Màu cam nổi bật */
+  color: white; /* Chữ màu trắng */
+  padding: 12px 20px; /* Khoảng cách bên trong nút */
+  font-size: 16px; /* Kích thước chữ */
+  font-weight: bold; /* Chữ đậm */
+  border: none; /* Loại bỏ đường viền */
+  border-radius: 8px; /* Bo góc nút */
+  cursor: pointer; /* Thay đổi con trỏ khi hover */
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1); /* Hiệu ứng bóng */
+  transition: all 0.3s ease; /* Hiệu ứng chuyển động */
+  margin-left: 310px;
+  margin-top: 20px;
+}
+
+/* Hiệu ứng hover */
+.order-button:hover {
+  background-color: #213a58; /* Màu cam đậm hơn */
+  box-shadow: 0 6px 8px rgba(0, 0, 0, 0.15); /* Tăng bóng khi hover */
+  transform: translateY(-2px); /* Di chuyển nút lên một chút */
+}
+
+/* Hiệu ứng khi nhấn */
+.order-button:active {
+  background-color: #213a58; /* Màu cam tối hơn */
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1); /* Giảm bóng khi nhấn */
+  transform: translateY(0); /* Trả lại vị trí ban đầu */
+}
+
+.sps {
+  text-align: center;
+  margin-bottom: 5px;
+}
+
+

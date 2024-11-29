@@ -10,7 +10,28 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.2].define(version: 2024_11_20_151041) do
+ActiveRecord::Schema[7.2].define(version: 2024_11_29_033339) do
+  create_table "donhangs", force: :cascade do |t|
+    t.string "hoten"
+    t.string "sdt"
+    t.text "diachi"
+    t.string "tensanpham"
+    t.integer "soluong"
+    t.boolean "trangthaithanhtoan"
+    t.decimal "tongthanhtoan"
+    t.datetime "ngaydathang"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+  end
+
+  create_table "messages", force: :cascade do |t|
+    t.integer "taikhoan_id", null: false
+    t.text "content", null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["taikhoan_id"], name: "index_messages_on_taikhoan_id"
+  end
+
   create_table "sanphams", force: :cascade do |t|
     t.string "ten", null: false
     t.string "loai"
@@ -37,4 +58,6 @@ ActiveRecord::Schema[7.2].define(version: 2024_11_20_151041) do
     t.string "avatar_url"
     t.text "giohang"
   end
+
+  add_foreign_key "messages", "taikhoans"
 end

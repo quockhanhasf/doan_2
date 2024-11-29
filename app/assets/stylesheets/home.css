@@ -74,9 +74,9 @@ body{
 .cart-container {
     position: relative;
     display: inline-block; /* Ensures it aligns with other inline elements */
-    margin-right: 50px;
+   
     margin-left: 20px;
-    margin-right: 110px;
+    margin-right: 80px;
     transition: background-color 0.3s ease;
     cursor: pointer; /* Thể hiện rằng đây là phần có thể click được */
   }
@@ -84,6 +84,26 @@ body{
   .cart-container:hover {
     background-color: #e0f7fa; /* Màu nền khi hover */
      transform: scale(1.05);
+  }
+
+  .mess-container {
+    position: relative;
+    display: inline-block; /* Ensures it aligns with other inline elements */
+    margin-right: 40px;
+   
+    
+    transition: background-color 0.3s ease;
+    cursor: pointer; /* Thể hiện rằng đây là phần có thể click được */
+  }
+
+  .mess-container:hover {
+    background-color: #e0f7fa; /* Màu nền khi hover */
+     transform: scale(1.05);
+  }
+
+  .messenger-icon{
+    width: 38px;
+    height: auto;
   }
   
   /* Cart icon styling */
@@ -114,15 +134,24 @@ body{
         padding: 20px;
         gap: 20px; /* Khoảng cách giữa các sản phẩm */
     }
+
+   
     
     .product-card {
-        width: 200px;
-        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
-        border-radius: 8px;
-        overflow: hidden; /* Ảnh không tràn ra khỏi khung */
+        border: 1px solid #ddd;
+        border-radius: 15px;
+        background: #ffffff;
+        box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.1);
+        width: 250px;
+        padding: 20px;
         text-align: center;
-        background-color: #fff;
-    }
+        transition: all 0.3s ease;
+      }
+      
+      .product-card:hover {
+        transform: translateY(-10px) scale(1.02);
+        box-shadow: 0px 8px 15px rgba(0, 0, 0, 0.2);
+      }
     
     .product-image {
         width: 200px;    /* Đặt chiều rộng ảnh là 200px */
@@ -205,19 +234,31 @@ body{
         align-items: center; /* Căn giữa theo chiều dọc */
     }
 
-    
+      /* Hiệu ứng khi nhấn */
+      .add-to-cart:active {
+        background-color: #213a58; /* Màu cam tối hơn */
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1); /* Giảm bóng khi nhấn */
+        transform: translateY(0); /* Trả lại vị trí ban đầu */
+      }
+
     .add-to-cart {
-        padding: 8px 16px;
-        background-color: #28a745; /* Màu xanh lá cho nút thêm vào giỏ */
-        color: white;
-        border: none;
-        border-radius: 4px;
-        cursor: pointer;
+        background-color: #09ac14; /* Màu cam nổi bật */
+        color: white; /* Chữ màu trắng */
+        padding: 12px 20px; /* Khoảng cách bên trong nút */
+        font-size: 15px; /* Kích thước chữ */
+        font-weight: bold; /* Chữ đậm */
+        border: none; /* Loại bỏ đường viền */
+        border-radius: 8px; /* Bo góc nút */
+        cursor: pointer; /* Thay đổi con trỏ khi hover */
+        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1); /* Hiệu ứng bóng */
+        transition: all 0.3s ease; /* Hiệu ứng chuyển động */
         margin-top: 10px;
     }
     
     .add-to-cart:hover {
-        background-color: #218838; /* Màu sậm hơn khi hover */
+        background-color: #213a58; /* Màu cam đậm hơn */
+        box-shadow: 0 6px 8px rgba(0, 0, 0, 0.15); /* Tăng bóng khi hover */
+        transform: translateY(-2px); /* Di chuyển nút lên một chút */
     }
     
     /* Style cho Footer */

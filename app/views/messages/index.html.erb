@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <style>
+        /* Giao diện của các tin nhắn */
+.messages-container {
+  max-height: 400px;
+  overflow-y: scroll;
+  margin-bottom: 20px;
+}
+
+.message {
+  background-color: #f1f1f1;
+  border-radius: 5px;
+  padding: 10px;
+  margin-bottom: 10px;
+  max-width: 60%;
+}
+
+.from-user {
+  background-color: #e1f7d5; /* Màu nền khác cho tin nhắn của người dùng */
+  margin-left: auto;
+}
+
+.message p {
+  margin: 0;
+}
+
+.form-group {
+  margin-top: 10px;
+}
+
+textarea {
+  width: 100%;
+  padding: 10px;
+  border: 1px solid #ccc;
+  border-radius: 5px;
+}
+
+button {
+  width: 100%;
+  padding: 10px;
+  margin-top: 10px;
+  background-color: #007bff;
+  color: white;
+  border: none;
+  border-radius: 5px;
+}
+
+    </style>
+</head>
+<body>
+    <h2>Nhắn Tin với Admin</h2>
+
+<div class="messages-container">
+  <% @messages.each do |message| %>
+    <div class="message <%= 'from-user' if message.user == current_user %>">
+      <p><strong><%= message.user.hoten %>:</strong> <%= message.content %></p>
+      <small><%= message.created_at.strftime('%H:%M %d-%m-%Y') %></small>
+    </div>
+  <% end %>
+</div>
+
+<%= form_with model: @message, url: messages_path, local: true do |f| %>
+  <div class="form-group">
+    <%= f.text_area :content, placeholder: "Nhập tin nhắn...", rows: 3, required: true %>
+  </div>
+  <%= f.submit "Gửi", class: "btn btn-primary" %>
+<% end %>
+
+</body>
+</html>

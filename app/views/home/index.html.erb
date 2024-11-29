@@ -28,12 +28,25 @@
         <% cart = current_user.giohang.present? ? JSON.parse(current_user.giohang) : {} %>
         <% product_count = cart.keys.size %> <!-- Đếm số lượng sản phẩm (số key) -->
         <%= link_to image_tag('giohang.png', alt: 'Cart', class: 'cart-icon'), cart_path %>
+        
       <% else %>
         <a href="#" onclick="showLoginAlert(event)">
           <%= image_tag('giohang.png', alt: 'Cart', class: 'cart-icon') %>
         </a>
+        
       <% end %>
       <span class="cart-badge"><%= product_count || 0 %></span> <!-- Hiển thị số lượng sản phẩm -->
+    </div>
+
+     <!-- Thêm phần Messenger vào đây -->
+    <div class="mess-container">
+      <% if current_user %>
+        <%= link_to image_tag('mess.jpg', alt: 'Messenger', class: 'messenger-icon'), messages_path  %>
+      <% else %>
+        <a href="#" onclick="showLoginAlert(event)">
+          <%= image_tag('mess.jpg', alt: 'Messenger', class: 'messenger-icon') %>
+        </a>
+      <% end %>
     </div>
 
 
@@ -80,17 +93,20 @@
 
   <!-- Modal "Thêm vào giỏ hàng" -->
   <div id="addToCartModal" class="modal" style="display: none;">
-  <div class="modal-contentt">
-    <span class="close-button" onclick="closeAddToCartModal()">×</span>
-    <!-- Phần hiển thị sản phẩm được chọn -->
-    <div id="productPreview"></div>
-    <!-- Thanh trượt số lượng -->
-    <p>Chọn số lượng sản phẩm bạn muốn thêm vào giỏ hàng:</p>
-    <input type="range" id="quantitySlider" min="1" max="20" step="1" value="1" oninput="updateQuantityDisplay(this.value)">
-    <p>Số lượng: <span id="quantityDisplay">1</span></p>
-    <%= button_tag 'Xác nhận', class: 'btn btn-primary confirm-btn', onclick: "addToCart()" %>
+    <div class="modal-contentt">
+      <span class="close-button" onclick="closeAddToCartModal()">×</span>
+      <!-- Phần hiển thị sản phẩm được chọn -->
+      <div id="productPreview"></div>
+      <!-- Số lượng tồn kho -->
+      <p id="stockInfo" style="text-align: center; font-weight: bold; color: #333;"></p>
+      <!-- Thanh trượt số lượng -->
+      <p>Chọn số lượng sản phẩm bạn muốn thêm vào giỏ hàng:</p>
+      <input type="range" id="quantitySlider" min="1" max="20" step="1" value="1" oninput="updateQuantityDisplay(this.value)">
+      <p>Số lượng: <span id="quantityDisplay">1</span></p>
+      <%= button_tag 'Xác nhận', class: 'btn btn-primary confirm-btn', onclick: "addToCart()" %>
+    </div>
   </div>
-</div>
+
 
 
 
@@ -112,7 +128,8 @@
               data: { 
                 product_name: sanpham.ten,
                 product_image: asset_path(sanpham.hinhanh),
-                product_unit: sanpham.donvi
+                product_unit: sanpham.donvi,
+                product_stock: sanpham.soluong
               },
               onclick: "openAddToCartModal(this)" %>
           </div>
@@ -201,7 +218,7 @@
 
     function showLoginAlert(event) {
       event.preventDefault(); // Ngăn chặn hành động mặc định (truy cập vào giỏ hàng)
-      alert("Bạn cần đăng nhập để truy cập vào giỏ hàng.");
+      alert("Bạn cần phải đăng nhập.");
     }
 
 
@@ -216,6 +233,7 @@
       const productName = button.getAttribute('data-product-name');
       const productImage = button.getAttribute('data-product-image');
       const productUnit = button.getAttribute('data-product-unit'); // Lấy đơn vị sản phẩm
+      const productStock = button.getAttribute('data-product-stock'); // Lấy số lượng tồn kho
 
       const addToCartModal = document.getElementById('addToCartModal');
 
@@ -235,13 +253,22 @@
       const modalContent = addToCartModal.querySelector('.modal-contentt');
       modalContent.prepend(productPreview); // Thêm vào đầu modal
 
-       // Thêm đơn vị vào thanh hiển thị số lượng
+      // Hiển thị số lượng tồn kho
+      const stockInfo = document.getElementById('stockInfo');
+      stockInfo.textContent = `Số lượng tồn kho: ${productStock} ${productUnit}`;
+
+      // Thêm đơn vị vào thanh hiển thị số lượng
       const quantityDisplay = document.getElementById('quantityDisplay');
       quantityDisplay.setAttribute('data-unit', productUnit);
+
+      // Điều chỉnh giới hạn slider dựa trên tồn kho
+      const quantitySlider = document.getElementById('quantitySlider');
+      quantitySlider.max = Math.min(20, productStock); // Giới hạn tối đa là 20 hoặc số lượng tồn kho
 
       // Hiển thị modal
       addToCartModal.style.display = 'flex';
     }
+
 
     // Hàm đóng modal
     function closeAddToCartModal() {

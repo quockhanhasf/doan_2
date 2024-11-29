@@ -18,53 +18,59 @@
     <table>
       <thead>
         <tr>
+          <th class="select-all"><input type="checkbox" id="selectAll" onchange="toggleSelectAll(this)"></th>
           <th class="sp">Sản phẩm</th>
           <th class="sl">Số lượng</th>
           <th class="giac">Giá</th>
           <th class="giac"></th>
         </tr>
       </thead>
-      <tbody>
-        <% cart.each do |product_name, quantity| %>
-          <% product = Sanpham.find_by(ten: product_name) %>
-          <% product_price = (product.gia * quantity).round(2) %> <!-- Tính giá từng sản phẩm -->
-          <% total_price += product_price %> <!-- Cộng vào tổng giá -->
+    <tbody>
+      <% cart.each do |product_name, quantity| %>
+        <% product = Sanpham.find_by(ten: product_name) %>
+        <% product_price = (product.gia * quantity).round(2) %> <!-- Tính giá từng sản phẩm -->
+        <% total_price += product_price %> <!-- Cộng vào tổng giá -->
 
-          <tr>
-            <td>
-              <div class="product-info">
-                <img src="<%= asset_path(product.hinhanh) %>" alt="<%= product_name %>" class="product-image">
-                <span><%= product_name %></span>
-              </div>
-            </td>
-            <td class="sl">
-              <% don_vi = product.donvi %> <!-- Lấy đơn vị của sản phẩm -->
-              <span class="kg"><%= "#{quantity.to_i} #{don_vi}" %></span>
-            </td>
-            <td class="giac">
-              <span class="price">
-                <%= CurrencyFormatter.format_vnd(product_price) %>
-              </span>
-            </td>
+        <tr>
+          <td class="select-product">
+            <input type="checkbox" class="product-checkbox" data-product="<%= product_name %>">
+          </td>
+          <td>
+            <div class="product-info">
+              <img src="<%= asset_path(product.hinhanh) %>" alt="<%= product_name %>" class="product-image">
+              <span><%= product_name %></span>
+            </div>
+          </td>
+          <td class="sl">
+            <% don_vi = product.donvi %> <!-- Lấy đơn vị của sản phẩm -->
+            <% max_quantity = product.soluong %> <!-- Lấy số lượng tối đa từ bảng Sanpham -->
+            <span class="kg"><%= "#{quantity.to_i} #{don_vi}" %></span>
+          </td>
+          <td class="giac">
+            <span class="price">
+              <%= CurrencyFormatter.format_vnd(product_price) %>
+            </span>
+          </td>
+          <td class="giac">
+            <div class="quantity-actions">
+              <button type="button" 
+                  class="update-btn" 
+                  data-product="<%= product_name %>" 
+                  data-quantity="<%= quantity %>"
+                  data-max-quantity="<%= max_quantity %>"
+                  data-image="<%= asset_path(product.hinhanh) %>"
+                  data-unit="<%= product.donvi %>"
+                  onclick="openUpdateModal(this)">↺
+              </button>
+              <button type="button" class="remove-btn" data-product="<%= product_name %>" title="Xóa">
+                🗑️
+              </button>
+            </div>
+          </td>
+        </tr>
+      <% end %>
+    </tbody>
 
-            <td class="giac">
-              <div class="quantity-actions">
-                <button type="button" 
-                    class="update-btn" 
-                    data-product="<%= product_name %>" 
-                    data-quantity="<%= quantity %>"
-                    data-image="<%= asset_path(product.hinhanh) %>"
-                    data-unit="<%= product.donvi %>"
-                    onclick="openUpdateModal(this)">↺
-                </button>
-                <button type="button" class="remove-btn" data-product="<%= product_name %>" title="Xóa">
-                  🗑️
-                </button>
-              </div>
-            </td>
-          </tr>
-        <% end %>
-      </tbody>
       <tfoot>
         <tr>
           <td colspan="3" class="total-label">Tổng cộng:</td>
@@ -79,7 +85,7 @@
   <% end %>
 
   <% if current_user.giohang.present? && !JSON.parse(current_user.giohang).empty? %>
-    <button>Đặt hàng</button>
+    <button class="order-button" type="button" onclick="redirectToOrderPage()">🛒 Đặt hàng</button>
   <% end %>
 </div>
 
@@ -93,6 +99,7 @@
       <img id="updateProductImage" src="" alt="Sản phẩm" class="product-image">
       <h3 id="updateProductName"></h3>
     </div>
+    <p id="stockInfo" style="text-align: center; font-weight: bold; color: #333;"></p>
     <!-- Thanh trượt chỉnh sửa số lượng -->
     <p>Chọn số lượng sản phẩm bạn muốn cập nhật:</p>
     <input type="range" id="updateQuantitySlider" min="1" max="20" step="1" value="1" oninput="updateUpdateQuantityDisplay(this.value)" data-unit="kg">
@@ -103,9 +110,16 @@
 
 
 
-
-
-<script>
+<script>  
+  function redirectToOrderPage() {
+    const selectedProducts = getSelectedProducts();
+    if (selectedProducts.length > 0) {
+      const url = `/order?selected_products=${encodeURIComponent(JSON.stringify(selectedProducts))}`;
+      window.location.href = url;
+    } else {
+      alert("Vui lòng chọn ít nhất một sản phẩm để đặt hàng.");
+    }
+  }
 
   
   document.addEventListener("DOMContentLoaded", () => {
@@ -150,16 +164,20 @@
     const productName = button.getAttribute("data-product");
     const productImage = button.getAttribute("data-image");
     const currentQuantity =parseInt(button.getAttribute("data-quantity"));
+    const maxQuantity = parseInt(button.getAttribute("data-max-quantity")); // Lấy số lượng tối đa
     const productUnit = button.getAttribute("data-unit"); // Lấy đơn vị sản phẩm
 
     // Cập nhật nội dung modal
     document.getElementById("updateProductName").textContent = productName;
     document.getElementById("updateProductImage").src = productImage;
     document.getElementById("updateQuantitySlider").value = currentQuantity;
+    document.getElementById("updateQuantitySlider").max = maxQuantity; // Đặt giá trị tối đa cho slider
     document.getElementById("updateQuantityDisplay").textContent = `${currentQuantity} ${productUnit}`; // Hiển thị số lượng và đơn vị
 
     // Lưu đơn vị vào thuộc tính của slider để sử dụng khi cập nhật
     document.getElementById("updateQuantitySlider").setAttribute("data-unit", productUnit);
+    document.getElementById("stockInfo").textContent = `Số lượng có sẵn: ${maxQuantity} ${productUnit}`; 
+
 
     // Hiển thị modal
     document.getElementById("updateProductModal").style.display = "block";
@@ -208,6 +226,21 @@
 
     closeUpdateProductModal(); // Đóng modal
   }
+
+  function toggleSelectAll(selectAllCheckbox) {
+    const checkboxes = document.querySelectorAll(".product-checkbox");
+    checkboxes.forEach((checkbox) => {
+      checkbox.checked = selectAllCheckbox.checked;
+    });
+  }
+
+function getSelectedProducts() {
+  const selectedProducts = [];
+  document.querySelectorAll(".product-checkbox:checked").forEach((checkbox) => {
+    selectedProducts.push(checkbox.getAttribute("data-product"));
+  });
+  return selectedProducts;
+}
 
 
 </script>

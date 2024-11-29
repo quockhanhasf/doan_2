@@ -1,0 +1,259 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Danh sách sản phẩm</title>
+  <style>
+    /* Tổng thể */
+    body {
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  margin: 0;
+  padding: 0;
+  background: linear-gradient(to right, #ece9e6, #ffffff);
+  color: #333;
+}
+
+h1 {
+  text-align: center;
+  color: #4a90e2;
+  margin-top: 20px;
+  font-size: 2.5em;
+  text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+/* Container sản phẩm */
+.product-container {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 20px;
+  justify-content: center;
+  padding: 20px;
+  max-width: 1200px;
+  margin: auto;
+}
+
+/* Card sản phẩm */
+.product-card {
+  border: 1px solid #ddd;
+  border-radius: 15px;
+  background: #ffffff;
+  box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.1);
+  width: 250px;
+  padding: 20px;
+  text-align: center;
+  transition: all 0.3s ease;
+}
+
+.product-card:hover {
+  transform: translateY(-10px) scale(1.02);
+  box-shadow: 0px 8px 15px rgba(0, 0, 0, 0.2);
+}
+
+/* Hình ảnh sản phẩm */
+.product-card img {
+  max-width: 100%;
+  height: 180px;
+  object-fit: cover;
+  border-radius: 10px;
+  margin-bottom: 15px;
+}
+
+/* Tiêu đề sản phẩm */
+.product-card h3 {
+  font-size: 1.5em;
+  color: #333;
+  margin: 10px 0;
+  font-weight: bold;
+}
+
+/* Giá sản phẩm */
+.product-card p {
+  font-size: 1.2em;
+  color: #27ae60;
+  font-weight: bold;
+  margin: 10px 0;
+}
+
+/* Nút hành động */
+.product-card button {
+  display: inline-block;
+  padding: 8px 15px;
+  margin: 5px;
+  border: none;
+  border-radius: 5px;
+  font-size: 1em;
+  font-weight: bold;
+  cursor: pointer;
+  transition: background-color 0.3s ease, transform 0.2s ease;
+}
+
+.product-card button:first-of-type {
+  background-color: #007bff;
+  color: #fff;
+}
+
+.product-card button:first-of-type:hover {
+  background-color: #0056b3;
+}
+
+.product-card button:last-of-type {
+  background-color: #e74c3c;
+  color: #fff;
+}
+
+.product-card button:last-of-type:hover {
+  background-color: #c0392b;
+}
+
+/* Nút thêm sản phẩm */
+.add {
+  display: block;
+  margin: 20px auto;
+  padding: 10px 20px;
+  font-size: 1.2em;
+  background-color: #28a745;
+  color: #fff;
+  border: none;
+  border-radius: 10px;
+  cursor: pointer;
+  box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.2);
+  transition: all 0.3s ease;
+}
+
+.add:hover {
+  background-color: #218838;
+  transform: scale(1.05);
+}
+
+/* Nút quay lại */
+.back-button {
+  display: inline-block;
+  margin: 20px auto;
+  padding: 10px 20px;
+  background-color: #4a90e2;
+  color: #fff;
+  text-decoration: none;
+  border-radius: 5px;
+  text-align: center;
+  font-weight: bold;
+  box-shadow: 0px 2px 4px rgba(0, 0, 0, 0.2);
+  transition: background-color 0.3s ease, transform 0.2s ease;
+}
+
+.back-button:hover {
+  background-color: #3a78c2;
+  transform: scale(1.05);
+}
+
+.hidden {
+  display: none;
+}
+
+  </style>
+</head>
+<body>
+  <h1>Danh sách sản phẩm</h1>
+  <button class="add">Thêm sản phẩm</button>
+  <%= link_to 'Quay lại', root_path, class: 'back-button' %>
+  <div class="product-container">
+    
+    <% @sanphams.each do |sanpham| %>
+      <div class="product-card">
+        <%= image_tag asset_path(sanpham.hinhanh), alt: sanpham.ten, class: 'product-image' %>
+        <h3><%= sanpham.ten %></h3>
+
+        <!-- Phần giá -->
+        <p class="product-price" id="price_<%= sanpham.id %>">
+            Giá: <%= number_to_currency(sanpham.gia, unit: "VNĐ") %>
+        </p>
+        <input type="text" id="input_price_<%= sanpham.id %>" value="<%= sanpham.gia %>" class="hidden" />
+
+        <!-- Button cập nhật, xoá -->
+        <button id="update_button_<%= sanpham.id %>" onclick="toggleUpdate(<%= sanpham.id %>)">Cập nhật</button>
+        <button id="delete_button_<%= sanpham.id %>" onclick="deleteProduct(<%= sanpham.id %>)">Xoá</button>
+        </div>
+
+
+
+
+
+    <% end %>
+  </div>
+
+ 
+  
+
+
+ <script>
+   function toggleUpdate(id) {
+  const priceElement = document.getElementById(`price_${id}`);
+  const inputPrice = document.getElementById(`input_price_${id}`);
+  const updateButton = document.getElementById(`update_button_${id}`);
+
+  // Kiểm tra nếu nút là "Cập nhật" thì chuyển sang trạng thái "Xác nhận"
+  if (updateButton.innerText === "Cập nhật") {
+    // Ẩn giá hiện tại và hiển thị ô nhập giá
+    priceElement.classList.add('hidden');
+    inputPrice.classList.remove('hidden');
+    
+    // Thay đổi nút từ "Cập nhật" thành "Xác nhận"
+    updateButton.innerText = "Xác nhận";
+  } else {
+    // Nếu là "Xác nhận", thì thực hiện cập nhật giá
+    const newPrice = inputPrice.value;
+
+    // Gửi request AJAX để cập nhật giá
+    fetch(`/sanphams/${id}`, {
+      method: 'PATCH',
+      headers: {
+        'Content-Type': 'application/json',
+        'X-CSRF-Token': document.querySelector('meta[name="csrf-token"]').getAttribute('content')
+      },
+      body: JSON.stringify({ sanpham: { gia: newPrice } })
+    })
+      .then(response => response.json())
+      .then(data => {
+        // Cập nhật lại giá mới
+        priceElement.textContent = `Giá: ${data.gia} VNĐ`;
+
+        // Quay lại trạng thái ban đầu
+        priceElement.classList.remove('hidden');
+        inputPrice.classList.add('hidden');
+        updateButton.innerText = "Cập nhật";
+      })
+      .catch(error => {
+        console.error('Lỗi khi cập nhật giá:', error);
+        alert('Cập nhật thất bại!');
+      });
+  }
+}
+
+// Chức năng xoá sản phẩm
+function deleteProduct(id) {
+  if (confirm("Bạn có chắc muốn xoá sản phẩm này?")) {
+    fetch(`/sanphams/${id}`, {
+      method: 'DELETE',
+      headers: {
+        'X-CSRF-Token': document.querySelector('meta[name="csrf-token"]').getAttribute('content')
+      }
+    })
+      .then(response => {
+        if (response.ok) {
+          document.getElementById(`product_${id}`).remove(); // Xoá sản phẩm khỏi giao diện
+        } else {
+          alert('Xoá sản phẩm thất bại!');
+        }
+      })
+      .catch(error => {
+        console.error('Lỗi khi xoá sản phẩm:', error);
+        alert('Xoá sản phẩm thất bại!');
+      });
+  }
+}
+
+
+
+
+
+ </script> 
+</body>
+</html>

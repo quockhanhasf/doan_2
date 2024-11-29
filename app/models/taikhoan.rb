@@ -1,5 +1,6 @@
 class Taikhoan < ApplicationRecord
   before_create :set_default_avatar_url
+  has_many :messages, dependent: :destroy # Một tài khoản có nhiều tin nhắn
 
   private
 

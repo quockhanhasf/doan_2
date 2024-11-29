@@ -23,7 +23,7 @@ Taikhoan.create([
     sdt: '0123456789',
     avatar_url: 'th.jpg',
     giohang: ''
-    
+
   },
   {
     username: 'user',
@@ -350,6 +350,6 @@ Sanpham.create([
     soluong: 100, # Số lượng ví dụ
     donvi: 'bao',
     hinhanh: 'gaost.jpg' # Đảm bảo hình ảnh có trong thư mục assets/images
-  },
+  }
 
 ])

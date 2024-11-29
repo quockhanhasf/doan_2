@@ -76,6 +76,11 @@
     <% if @user.quyen == "admin" %>
       <%= button_tag 'Thống kê', class: 'tke-button action-button' %>
     <% end %>
+    <!-- New "Sản phẩm" Button -->
+    <% if @user.quyen == "admin" %>
+      <%= link_to 'Sản phẩm', sanphams_path, class: 'product-button' %>
+    <% end %>
+
   </div> <!-- Kết thúc container -->
 
   <script>
