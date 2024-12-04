@@ -86,7 +86,8 @@ body {
     outline: none;
   }
   
-  .order-button {
+  
+  .order-button{
     background-color: #09d1c7; /* Màu cam nổi bật */
     color: white; /* Chữ màu trắng */
     padding: 12px 20px; /* Khoảng cách bên trong nút */
@@ -97,11 +98,8 @@ body {
     cursor: pointer; /* Thay đổi con trỏ khi hover */
     box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1); /* Hiệu ứng bóng */
     transition: all 0.3s ease; /* Hiệu ứng chuyển động */
-    margin-left: 220px;
-    margin-top: 20px;
   }
-  
-  /* Hiệu ứng hover */
+
   .order-button:hover {
     background-color: #213a58; /* Màu cam đậm hơn */
     box-shadow: 0 6px 8px rgba(0, 0, 0, 0.15); /* Tăng bóng khi hover */
@@ -110,6 +108,36 @@ body {
   
   /* Hiệu ứng khi nhấn */
   .order-button:active {
+    background-color: #213a58; /* Màu cam tối hơn */
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1); /* Giảm bóng khi nhấn */
+    transform: translateY(0); /* Trả lại vị trí ban đầu */
+  }
+
+  .check-button{
+    background-color: #09d1c7; /* Màu cam nổi bật */
+    color: white; /* Chữ màu trắng */
+    padding: 12px 20px; /* Khoảng cách bên trong nút */
+    font-size: 16px; /* Kích thước chữ */
+    font-weight: bold; /* Chữ đậm */
+    border: none; /* Loại bỏ đường viền */
+    border-radius: 8px; /* Bo góc nút */
+    cursor: pointer; /* Thay đổi con trỏ khi hover */
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1); /* Hiệu ứng bóng */
+    transition: all 0.3s ease; /* Hiệu ứng chuyển động */
+    margin-left: 270px;
+    margin-top: 20px;
+  }
+
+  
+  /* Hiệu ứng hover */
+  .check-button:hover {
+    background-color: #213a58; /* Màu cam đậm hơn */
+    box-shadow: 0 6px 8px rgba(0, 0, 0, 0.15); /* Tăng bóng khi hover */
+    transform: translateY(-2px); /* Di chuyển nút lên một chút */
+  }
+  
+  /* Hiệu ứng khi nhấn */
+  .check-button:active {
     background-color: #213a58; /* Màu cam tối hơn */
     box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1); /* Giảm bóng khi nhấn */
     transform: translateY(0); /* Trả lại vị trí ban đầu */
@@ -126,7 +154,7 @@ body {
       font-size: 14px;
     }
   
-    .order-button {
+    .check-button {
       font-size: 16px;
     }
   }
@@ -282,6 +310,8 @@ body {
   background-color: rgba(0, 0, 0, 0.5);
 }
 
+
+
 .modal-content {
   background-color: white;
   margin: 10% auto;
@@ -295,6 +325,15 @@ body {
   max-width: 75%;
   height: auto;
   margin: 20px 0;
+}
+
+.modal-contentt{
+  background-color: white;
+  margin: 10% auto;
+  padding: 20px;
+  border-radius: 8px;
+  width: 60%;
+  text-align: center;
 }
 
 .success-button {
@@ -335,4 +374,9 @@ body {
 
 .btn_back:hover {
     background-color: #0056b3; /* Màu nền khi hover */
+}
+
+.shipping-option.disabled, .payment-option.disabled {
+  cursor: not-allowed;
+  opacity: 0.5;
 }

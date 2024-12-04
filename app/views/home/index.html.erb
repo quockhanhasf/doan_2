@@ -14,7 +14,7 @@
   </head>
   <body >
     
-  <!-- Navbar -->
+<!-- Navbar -->
 <div class="navbar">
   <div class="menu">
     <%= link_to 'Trang Chủ', root_path, id: 'homeLink', data: { turbo: false } %>
@@ -28,29 +28,27 @@
         <% cart = current_user.giohang.present? ? JSON.parse(current_user.giohang) : {} %>
         <% product_count = cart.keys.size %> <!-- Đếm số lượng sản phẩm (số key) -->
         <%= link_to image_tag('giohang.png', alt: 'Cart', class: 'cart-icon'), cart_path %>
-        
       <% else %>
         <a href="#" onclick="showLoginAlert(event)">
           <%= image_tag('giohang.png', alt: 'Cart', class: 'cart-icon') %>
         </a>
-        
       <% end %>
       <span class="cart-badge"><%= product_count || 0 %></span> <!-- Hiển thị số lượng sản phẩm -->
     </div>
 
-     <!-- Thêm phần Messenger vào đây -->
+    <!-- Thêm phần Messenger vào đây -->
     <div class="mess-container">
       <% if current_user %>
         <%= link_to image_tag('mess.jpg', alt: 'Messenger', class: 'messenger-icon'), messages_path  %>
+        <% if @unread_message_count > 0 %>
+          <span class="mess-badge"><%= @unread_message_count %></span> <!-- Hiển thị số mũ tin nhắn chưa đọc -->
+        <% end %>
       <% else %>
         <a href="#" onclick="showLoginAlert(event)">
           <%= image_tag('mess.jpg', alt: 'Messenger', class: 'messenger-icon') %>
         </a>
       <% end %>
     </div>
-
-
-
 
     <% if current_user %>
       <%= link_to current_user.hoten, user_path(current_user), class: 'user-link' %> <!-- Redirect to user's profile -->
@@ -59,6 +57,7 @@
     <% end %>
   </div>
 </div>
+
 
 
   <!-- Phần phân loại sản phẩm -->

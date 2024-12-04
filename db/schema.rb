@@ -10,15 +10,16 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.2].define(version: 2024_11_29_033339) do
+ActiveRecord::Schema[7.2].define(version: 2024_12_03_135057) do
   create_table "donhangs", force: :cascade do |t|
     t.string "hoten"
     t.string "sdt"
+    t.string "email"
     t.text "diachi"
     t.string "tensanpham"
     t.integer "soluong"
-    t.boolean "trangthaithanhtoan"
-    t.decimal "tongthanhtoan"
+    t.string "trangthaithanhtoan"
+    t.integer "tongthanhtoan"
     t.datetime "ngaydathang"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
@@ -29,6 +30,9 @@ ActiveRecord::Schema[7.2].define(version: 2024_11_29_033339) do
     t.text "content", null: false
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.integer "recipient_id", null: false
+    t.boolean "read", default: false
+    t.index ["recipient_id"], name: "index_messages_on_recipient_id"
     t.index ["taikhoan_id"], name: "index_messages_on_taikhoan_id"
   end
 
@@ -60,4 +64,5 @@ ActiveRecord::Schema[7.2].define(version: 2024_11_29_033339) do
   end
 
   add_foreign_key "messages", "taikhoans"
+  add_foreign_key "messages", "taikhoans", column: "recipient_id"
 end

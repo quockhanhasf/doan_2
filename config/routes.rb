@@ -22,6 +22,8 @@ Rails.application.routes.draw do
   # Đặt hàng
   get "/order", to: "cart#order", as: "order" # Truy cập qua GET
   post "/cart/create_order", to: "cart#create_order", as: "create_order"
+  resources :donhangs, only: [ :create ]
+
 
 
 

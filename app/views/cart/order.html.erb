@@ -35,13 +35,13 @@
                 <div class="sps">
                   <%= image_tag product.hinhanh, alt: product.ten, width: 100 %>
                 </div>
-                  <div class="sps">
+                  <div class="sps" id="tensp">
                     <%= product.ten %>
                   </div>
               </td>
-            <td><%= "#{quantity.to_i} #{product.donvi}" %></td>
-            <td><%= CurrencyFormatter.format_vnd(product.gia) %></td>
-            <td><%= CurrencyFormatter.format_vnd(product_price) %></td>
+            <td id="soluongsp"><%= "#{quantity.to_i} #{product.donvi}" %></td>
+            <td id="giasp"><%= CurrencyFormatter.format_vnd(product.gia) %></td>
+            <td id="tongtien"><%= CurrencyFormatter.format_vnd(product_price) %></td>
           </tr>
         <% end %>
       </tbody>
@@ -74,6 +74,12 @@ value="<%= @current_user&.hoten %>" required class="c">
     <div>
       <label for="phone">Số điện thoại:</label>
       <input type="tel" id="phone" name="phone" placeholder="Nhập số điện thoại" required pattern="[0-9]{10}" class="c">
+    </div>
+
+<!-- Nhập số điện thoại -->
+    <div>
+      <label for="email">Email:</label>
+      <input type="text" id="email" name="email" placeholder="Nhập địa chỉ Email">
     </div>
 
     <!-- Listbox chọn tỉnh/thành -->
@@ -222,25 +228,34 @@ value="<%= @current_user&.hoten %>" required class="c">
 
 
 
-  <!-- Modal Đặt hàng thành công -->
-<div id="orderSuccessModal" class="modal" style="display: none;">
-  <div class="modal-content">
-    <h2>Đặt hàng thành công!</h2>
-    <p>Cảm ơn bạn đã mua hàng. Đơn hàng của bạn đã được xác nhận.</p>
-    <%= link_to 'Quay lại', root_path, class: 'btn_back' %>
 
+
+  <!-- Modal kiểm tra  -->
+<div id="checkInfoModal" class="modal">
+  <div class="modal-contentt">
+    <span class="close">&times;</span>
+    <h2>Thông tin đặt hàng</h2>
+    <p><strong>Họ và tên:</strong> <span id="fullnameModal"></span></p>
+    <p><strong>Số điện thoại:</strong> <span id="phoneModal"></span></p>
+    <p><strong>Email:</strong> <span id="emailModal"></span></p>
+    <p><strong>Tỉnh/Thành phố:</strong> <span id="provinceModal"></span></p>
+    <p><strong>Quận/Huyện:</strong> <span id="districtModal"></span></p>
+    <p><strong>Phường/Xã:</strong> <span id="wardModal"></span></p>
+    <p><strong>Địa chỉ cụ thể:</strong> <span id="addressModal"></span></p>
+    <p><strong>Sản phẩm:</strong><br><pre id="productDetailsModal"></pre></p> <!-- Hiển thị danh sách sản phẩm ở đây -->
+    <p><strong>Trạng thái thanh toán:</strong> <span id="paymentStatusModal"></span></p>
+    <p><strong>Tổng thanh toán: </strong><span id="totalPaymentModal"></span></p> <!-- Hiển thị danh sách sản phẩm ở đây -->
+    <button type="button" class="order-button" id="orderButton">Đặt hàng</button>
   </div>
 </div>
 
-<!-- Các trường ẩn lưu thông tin khác -->
-  <!-- Tổng thanh toán -->
-  <input type="hidden" id="total_payment" name="tongthanhtoan" value="<%= @products.sum { |item| item[:product].gia * item[:quantity] } %>">
 
 
 
    <!-- Nút xác nhận đặt hàng -->
-    <button type="submit" class="order-button" id="confirmOrderButton">Xác nhận đặt hàng</button>
-
+    
+    <button type="button" class="check-button" id="checkButton">Kiểm tra</button>
+    
   </form>
   
 
@@ -373,28 +388,207 @@ value="<%= @current_user&.hoten %>" required class="c">
     });
   });
 
-  
   document.addEventListener("DOMContentLoaded", () => {
-    const confirmOrderButton = document.getElementById("confirmOrderButton");
-    const orderSuccessModal = document.getElementById("orderSuccessModal");
-    const closeModalButton = document.getElementById("closeModal");
+  const paymentStatusElement = document.getElementById("payment_status");
+  const shippingOptions = document.querySelectorAll(".shipping-option");
+  const paymentOptions = document.querySelectorAll(".payment-option");
 
-    // Khi nhấn nút "Xác nhận đặt hàng"
-    confirmOrderButton.addEventListener("click", (event) => {
-      event.preventDefault(); // Ngăn chặn hành động submit form mặc định
+  const checkPaymentStatus = () => {
+    if (paymentStatusElement.textContent.trim() === "Đã thanh toán") {
+      // Vô hiệu hóa phương thức vận chuyển
+      shippingOptions.forEach(option => {
+        option.disabled = true; // Vô hiệu hóa nút
+        option.classList.add("disabled"); // Thêm lớp để thay đổi giao diện (nếu cần)
+      });
 
-      // Hiển thị modal "Đặt hàng thành công"
-      orderSuccessModal.style.display = "block";
-    });
+      // Vô hiệu hóa phương thức thanh toán
+      paymentOptions.forEach(option => {
+        option.disabled = true; // Vô hiệu hóa nút
+        option.classList.add("disabled"); // Thêm lớp để thay đổi giao diện (nếu cần)
+      });
+    }
+  };
 
-    
+  // Gọi hàm kiểm tra ngay khi trang tải
+  checkPaymentStatus();
+
+  // Nếu trạng thái thanh toán thay đổi, kiểm tra lại
+  const observer = new MutationObserver(checkPaymentStatus);
+  observer.observe(paymentStatusElement, { childList: true });
+});
+
+
+
+
+  document.addEventListener("DOMContentLoaded", () => {
+    const checkButton = document.getElementById("checkButton");
+    const checkInfoModal = document.getElementById("checkInfoModal");
+    const closeModal = document.querySelector(".close");
+
+    // Khi nhấn nút "Kiểm tra"
+    checkButton.addEventListener("click", (event) => {
+      event.preventDefault(); // Ngăn chặn form submit
+
+      // Lấy các giá trị từ form
+      const fullname = document.getElementById("fullname").value;
+      const phone = document.getElementById("phone").value;
+      const email = document.getElementById("email").value;
+      const province = document.getElementById("province").value;
+      const district = document.getElementById("district").value;
+      const ward = document.getElementById("ward").value;
+      const address = document.getElementById("address").value;
+      const total_payment = document.getElementById("total_payment").value;
+
+      // Lấy các sản phẩm từ bảng
+      const products = document.querySelectorAll("table tbody tr");
+
+      // Tạo chuỗi để chứa thông tin sản phẩm, thêm tiêu đề một lần duy nhất
+      let productDetails = '';
+
+      // Duyệt qua tất cả các sản phẩm và lấy thông tin
+      products.forEach((productRow) => {
+        // Lấy tên sản phẩm
+        const productNameElement = productRow.querySelector("#tensp");
+        const productName = productNameElement ? productNameElement.textContent.trim() : '';
+
+        // Lấy số lượng và đơn vị
+        const quantityCell = productRow.querySelector("#soluongsp");
+        const quantity = quantityCell ? quantityCell.textContent.trim() : '';
+
+        // Lấy giá sản phẩm
+        const priceCell = productRow.querySelector("#giasp");
+        const price = priceCell ? priceCell.textContent.trim() : '';
+
+        // Lấy tổng tiền sản phẩm
+        const totalPriceCell = productRow.querySelector("#tongtien");
+        const totalPrice = totalPriceCell ? totalPriceCell.textContent.trim() : '';
+
+        // Nếu sản phẩm hợp lệ (có tên), thêm vào chuỗi chi tiết
+        if (productName) {
+          productDetails += `Tên sản phẩm: ${productName.padEnd(10)} Số lượng: ${quantity.padEnd(10)} Giá: ${price.padEnd(17)} Tổng tiền: ${totalPrice}\n`;
+        }
+      });
+
+
+      // Lấy tổng thanh toán
+      const totalPaymentElement = document.getElementById("total_payment");
+      const totalPayment = totalPaymentElement ? totalPaymentElement.textContent : '0';
+
+      // Hiển thị thông tin trong modal
+      document.getElementById("fullnameModal").innerText = fullname;
+      document.getElementById("phoneModal").innerText = phone;
+      document.getElementById("emailModal").innerText = email;
+      document.getElementById("provinceModal").innerText = province;
+      document.getElementById("districtModal").innerText = district;
+      document.getElementById("wardModal").innerText = ward;
+      document.getElementById("addressModal").innerText = address;
+      document.getElementById("productDetailsModal").innerText = productDetails; // Hiển thị thông tin tất cả sản phẩm
+      document.getElementById("paymentStatusModal").innerText = "Chưa thanh toán";  // Cập nhật trạng thái thanh toán
+      document.getElementById("totalPaymentModal").innerText = totalPayment;
+      
+
+    // Hiển thị modal
+    checkInfoModal.style.display = "block";
   });
 
+  // Đóng modal
+  closeModal.addEventListener("click", () => {
+    checkInfoModal.style.display = "none";
+  });
 
+  // Đóng modal khi nhấn ra ngoài modal
+  window.addEventListener("click", (event) => {
+    if (event.target === checkInfoModal) {
+      checkInfoModal.style.display = "none";
+    }
+  });
+});
+
+
+
+document.getElementById('orderButton').addEventListener('click', function () {
+  // Thu thập dữ liệu từ modal
+  const fullname = document.getElementById('fullnameModal').textContent.trim();
+  const phone = document.getElementById('phoneModal').textContent.trim();
+  const email = document.getElementById('emailModal').textContent.trim();
+  const province = document.getElementById('provinceModal').textContent.trim();
+  const district = document.getElementById('districtModal').textContent.trim();
+  const ward = document.getElementById('wardModal').textContent.trim();
+  const specificAddress = document.getElementById('addressModal').textContent.trim();
+  const paymentStatus = document.getElementById('paymentStatusModal').textContent.trim();
+  const productDetails = document.getElementById('productDetailsModal').textContent.trim();
+
+  // Gộp địa chỉ
+  const address = `${specificAddress}, ${ward}, ${district}, ${province}`;
+
+  // Kiểm tra thông tin và tổng thanh toán hợp lệ
+  let totalPayment = document.getElementById('totalPaymentModal').textContent.replace(/[^0-9]/g, ''); 
+  totalPayment = parseInt(totalPayment);
+
+  if (isNaN(totalPayment)) {
+    alert('Tổng thanh toán không hợp lệ!');
+    return;
+  }
+
+  // Tách thông tin sản phẩm từ productDetails
+  const productRegex = /Tên sản phẩm:\s*(.+?)\s+Số lượng:\s*(\d+)/;
+  const match = productDetails.match(productRegex);
+
+  if (!match) {
+    alert('Không thể phân tích dữ liệu sản phẩm.');
+    return;
+  }
+
+  const productName = match[1].trim(); // Tên sản phẩm
+  const quantity = match[2].trim(); // Số lượng
+
+  // Tạo object orderData với các giá trị thu thập từ modal
+  const orderData = {
+    hoten: fullname,
+    sdt: phone,
+    email: email,
+    diachi: address,
+    tensanpham: productName,
+    soluong: parseInt(quantity), // Chuyển sang kiểu số nguyên
+    trangthaithanhtoan: paymentStatus,
+    tongthanhtoan: totalPayment,
+    ngaydathang: new Date().toISOString(), // Lấy thời gian thực
+  };
+
+  console.log('Dữ liệu đặt hàng:', orderData);
+
+  // Xử lý gửi dữ liệu qua AJAX
+  fetch('/donhangs', {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify(orderData),
+  })
+  .then(response => {
+    if (!response.ok) {
+      return response.json().then(error => {
+        console.error('Server error:', error);
+        throw new Error(`HTTP error! status: ${response.status}`);
+      });
+    }
+    return response.json();
+  })
+  .then(data => {
+    console.log('Đặt hàng thành công:', data);
+    alert('Đặt hàng thành công!');
+  })
+  .catch(error => {
+    console.error('Lỗi khi đặt hàng:', error);
+    alert('Có lỗi xảy ra. Vui lòng thử lại!');
+  });
+
+});
 
 
 
 
 </script>
+
 </body>
 </html>

@@ -1,0 +1,142 @@
+body {
+  font-family: Arial, sans-serif;
+  background-color: #f9f9f9;
+  color: #333;
+  padding: 20px;
+}
+
+
+
+.messages-container {
+  max-width: 1000px;
+  margin: 0 auto;
+  display: flex;
+  flex-direction: column;
+}
+
+.admin-container, .user-container {
+  background: #fff;
+  padding: 20px;
+  border-radius: 8px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  
+}
+
+h2{
+  margin-left: 420px;
+  margin-top: -30px;
+}
+
+.user-list ul {
+  list-style: none;
+  padding: 0;
+
+}
+
+.user-list li {
+  margin-bottom: 10px;
+  
+  height: 30px;
+  border-bottom: 2px solid #ffffff; /* Tạo viền phân cách màu trắng */
+  display: flex;
+  align-items: center; /* Căn giữa nội dung theo chiều dọc */
+  padding: 0 10px; /* Thêm khoảng cách giữa nội dung và viền */
+  color: #ffffff; /* Màu chữ */
+  font-size: 17px; /* Cỡ chữ */
+}
+
+.user-list li:hover{
+  transform: translateY(-10px) scale(1.02);
+  box-shadow: 0px 8px 15px rgba(0, 0, 0, 0.2);
+}
+
+.user-list li.active {
+  font-weight: bold;
+}
+
+.chat-box {
+  max-height: 400px;
+  overflow-y: auto;
+  margin-bottom: 20px;
+  padding: 10px;
+  background: #f4f4f9;
+  border: 1px solid #ddd;
+  border-radius: 8px;
+}
+
+.message {
+  margin-bottom: 10px;
+  padding: 10px;
+  border-radius: 8px;
+  background-color: #e9ecef;
+  width: 190px;
+}
+
+.message.from-user {
+  background-color: #d1e7dd;
+  text-align: left;
+  margin-left: 30px;
+}
+
+.message.from-admin {
+  background-color: #e2e3e5;
+  text-align: left;
+  margin-left: 700px;
+}
+
+form textarea {
+  width: 100%;
+  border: 1px solid #ddd;
+  padding: 10px;
+  border-radius: 8px;
+}
+
+form .btn {
+  width: 100%;
+  background-color: #007bff;
+  color: white;
+  border: none;
+  padding: 10px;
+  border-radius: 8px;
+  cursor: pointer;
+}
+
+form .btn:hover {
+  background-color: #0056b3;
+}
+
+.badge {
+  background-color: red;
+  color: white;
+  border-radius: 50%;
+  padding: 5px 10px;
+  font-size: 0.9em;
+  margin-left: 5px;
+}
+
+.user-link {
+  text-decoration: none;
+  color: #333;
+}
+
+.user-link.active {
+  font-weight: bold;
+  color: blue;
+}
+
+.back-button {
+  display: inline-block;
+  background-color: #b0afbb;
+  color: white;
+  padding: 10px 20px;
+  border: none;
+  border-radius: 4px;
+  text-decoration: none; /* Bỏ gạch chân */
+  margin-top: 20px;
+  transition: background-color 0.3s;
+  margin-right: 120px;
+}
+
+.back-button:hover {
+  background-color: #7524bc; /* Màu nền khi hover */
+}

@@ -1,6 +1,7 @@
 class Taikhoan < ApplicationRecord
   before_create :set_default_avatar_url
-  has_many :messages, dependent: :destroy # Một tài khoản có nhiều tin nhắn
+  has_many :sent_messages, class_name: "Message", foreign_key: "taikhoan_id", dependent: :destroy
+  has_many :received_messages, class_name: "Message", foreign_key: "recipient_id", dependent: :destroy
 
   private
 
