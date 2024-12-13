@@ -148,11 +148,84 @@ h1 {
   display: none;
 }
 
+
+/* Modal */
+.modal {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.5);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1000;
+}
+
+.modal.hidden {
+  display: none;
+}
+
+.modal-content {
+  background-color: #fff;
+  border-radius: 10px;
+  padding: 20px;
+  width: 400px;
+  max-width: 90%;
+  box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.2);
+  position: relative;
+}
+
+.modal-content h2 {
+  margin-top: 0;
+  text-align: center;
+}
+
+.modal-content label {
+  display: block;
+  margin: 10px 0 5px;
+}
+
+.modal-content input {
+  width: 90%;
+  padding: 8px;
+  margin-bottom: 15px;
+  border: 1px solid #ddd;
+  border-radius: 5px;
+}
+
+.modal-content button {
+  background-color: #28a745;
+  color: #fff;
+  padding: 10px 15px;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  font-size: 1em;
+  margin-left: 125px
+}
+
+.modal-content button:hover {
+  background-color: #218838;
+}
+
+.modal-content .close {
+  position: absolute;
+  top: 10px;
+  right: 15px;
+  font-size: 1.5em;
+  cursor: pointer;
+  color: #333;
+}
+
+
+
   </style>
 </head>
 <body>
-  <h1>Danh sách sản phẩm</h1>
-  <button class="add">Thêm sản phẩm</button>
+  <h1>Danh sách sản phẩm</h1> 
+  <button class="add" onclick="openModal()">Thêm sản phẩm</button>
   <%= link_to 'Quay lại', root_path, class: 'back-button' %>
   <div class="product-container">
     
@@ -163,9 +236,20 @@ h1 {
 
         <!-- Phần giá -->
         <p class="product-price" id="price_<%= sanpham.id %>">
-            Giá: <%= number_to_currency(sanpham.gia, unit: "VNĐ") %>
+            Giá: <%= number_to_currency(sanpham.gia, unit: 'VNĐ', format: "%n %u") %>
+           
         </p>
         <input type="text" id="input_price_<%= sanpham.id %>" value="<%= sanpham.gia %>" class="hidden" />
+
+        <p class="product-donvi" id="donvi_<%= sanpham.id %>">
+          Đơn vị: <%= sanpham.donvi %>
+        </p>
+        
+        <select id="input_donvi_<%= sanpham.id %>" class="hidden">
+          <option value="kg">kg</option>
+          <option value="bao">bao</option>
+          <option value="thung">thùng</option>
+        </select>
 
         <!-- Button cập nhật, xoá -->
         <button id="update_button_<%= sanpham.id %>" onclick="toggleUpdate(<%= sanpham.id %>)">Cập nhật</button>
@@ -177,6 +261,47 @@ h1 {
 
 
     <% end %>
+  </div>
+
+  <!-- Modal Thêm sản phẩm -->
+  <div id="addProductModal" class="modal hidden">
+    <div class="modal-content">
+      <span class="close" onclick="closeModal()">&times;</span>
+      <h2>Thêm sản phẩm mới</h2>
+      <form id="addProductForm">
+        <label for="productName">Tên sản phẩm:</label>
+        <input type="text" id="productName" name="productName" required>
+        
+        <label for="productImage">Hình ảnh sản phẩm:</label>
+        <input type="file" id="productImage" name="productImage" accept="image/*" required>
+        
+        <label for="productQuantity">Số lượng:</label>
+        <input type="number" id="productQuantity" name="productQuantity" min="1" required>
+        
+        <label for="productdonvi">Đơn vị:</label>
+        <select id="productdonvi" name="productdonvi" required>
+          <option value="kg">kg</option>
+          <option value="bao">bao</option>
+          <option value="thung">thùng</option>
+        </select>
+
+        <!-- Loại sản phẩm -->
+        <label for="productloai">Loại:</label>
+        <select id="productloai" name="productloai" required>
+          <option value="Rau">Rau</option>
+          <option value="Cu">Củ</option>
+          <option value="Qua">Quả</option>
+          <option value="Thit">Thịt</option>
+          <option value="Sua">Sữa</option>
+          <option value="Gao">Gạo</option>
+        </select>
+
+        <label for="productPrice">Giá:</label>
+        <input type="number" id="productPrice" name="productPrice" min="0" required>
+        
+        <button type="button" onclick="submitProduct()">Thêm sản phẩm</button>
+      </form>
+    </div>
   </div>
 
  
@@ -219,6 +344,8 @@ h1 {
         priceElement.classList.remove('hidden');
         inputPrice.classList.add('hidden');
         updateButton.innerText = "Cập nhật";
+        
+        location.reload(); // Tự động tải lại trang
       })
       .catch(error => {
         console.error('Lỗi khi cập nhật giá:', error);
@@ -238,7 +365,9 @@ function deleteProduct(id) {
     })
       .then(response => {
         if (response.ok) {
-          document.getElementById(`product_${id}`).remove(); // Xoá sản phẩm khỏi giao diện
+           // Xoá sản phẩm khỏi giao diện
+          alert("Sản phẩm đã được xoá!");
+          location.reload(); // Tự động tải lại trang
         } else {
           alert('Xoá sản phẩm thất bại!');
         }
@@ -249,6 +378,60 @@ function deleteProduct(id) {
       });
   }
 }
+
+////////THÊM SẢN PHẨM
+// Mở modal
+function openModal() {
+  document.getElementById("addProductModal").classList.remove("hidden");
+}
+
+// Đóng modal
+function closeModal() {
+  document.getElementById("addProductModal").classList.add("hidden");
+}
+
+// Gửi sản phẩm mới
+  function submitProduct() {
+      const name = document.getElementById("productName").value;
+      const image = document.getElementById("productImage").files[0];
+      const quantity = document.getElementById("productQuantity").value;
+      const price = document.getElementById("productPrice").value;
+      const donvi = document.getElementById("productdonvi").value;
+      const loai = document.getElementById("productloai").value;
+
+      if (!name || !image || !quantity || !price || !donvi || !loai) {
+        alert("Vui lòng nhập đầy đủ thông tin!");
+        return;
+      }
+
+      const formData = new FormData();
+      formData.append("sanpham[ten]", name);
+      formData.append("sanpham[hinhanh]", image);
+      formData.append("sanpham[soluong]", quantity);
+      formData.append("sanpham[gia]", price);
+      formData.append("sanpham[donvi]", donvi);
+      formData.append("sanpham[loai]", loai);
+
+      fetch("/sanphams", {
+        method: "POST",
+        headers: {
+          "X-CSRF-Token": document.querySelector('meta[name="csrf-token"]').getAttribute("content")
+        },
+        body: formData
+      })
+      .then(response => response.json())
+      .then(data => {
+        if (data.success) {
+          alert("Thêm sản phẩm thành công!");
+          location.reload();
+        } else {
+          alert("Lỗi: " + data.error);
+        }
+      })
+      .catch(error => {
+        console.error("Lỗi khi thêm sản phẩm:", error);
+      });
+    }
 
 
 

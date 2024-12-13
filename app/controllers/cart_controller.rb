@@ -1,9 +1,26 @@
 class CartController < ApplicationController
   before_action :require_login # Đảm bảo người dùng đã đăng nhập
+  skip_before_action :verify_authenticity_token, only: [ :set_selected_products ]
+
+
+  def set_selected_products
+    selected_products = params[:selected_products] || []
+
+    if selected_products.is_a?(Array)
+      session[:selected_products] = selected_products.to_json
+      render json: { success: true }
+    else
+      render json: { success: false, error: "Danh sách sản phẩm không hợp lệ" }, status: :unprocessable_entity
+    end
+  rescue => e
+    Rails.logger.error("Lỗi trong set_selected_products: #{e.message}")
+    render json: { success: false, error: "Có lỗi xảy ra, vui lòng thử lại." }, status: :internal_server_error
+  end
 
   def add_to_cart
     product_name = params[:product_name]
     quantity = params[:quantity]
+
 
     # Lấy tài khoản hiện tại
     current_account = current_user
@@ -21,6 +38,7 @@ class CartController < ApplicationController
     # Lưu lại giỏ hàng
     current_account.update(giohang: cart.to_json)
 
+    session[:selected_products] = nil
     render json: { success: true, cart: cart }, status: :ok
   rescue StandardError => e
     render json: { success: false, error: e.message }, status: :unprocessable_entity
@@ -73,23 +91,53 @@ class CartController < ApplicationController
     end
   end
 
-  def order
-    selected_products_param = params[:selected_products]
 
-    # Chuyển `selected_products` thành mảng nếu nó không phải mảng
-    @selected_products = if selected_products_param.is_a?(String)
-                          JSON.parse(selected_products_param) rescue []
+
+
+
+
+  def order
+    @selected_products = if session[:selected_products].is_a?(String) && !session[:selected_products].empty?
+                           JSON.parse(session[:selected_products]) rescue []
     else
-                           selected_products_param || []
+                           []
     end
 
-    # Lấy thông tin sản phẩm và số lượng
+    if @selected_products.empty?
+      flash[:alert] = "Vui lòng chọn ít nhất một sản phẩm để đặt hàng."
+      redirect_to cart_path
+      return
+    end
+
+    # Tìm sản phẩm theo tên và số lượng từ giỏ hàng
+    cart = current_user.giohang.present? ? JSON.parse(current_user.giohang) : {}
     @products = @selected_products.map do |product_name|
       product = Sanpham.find_by(ten: product_name)
-      quantity = JSON.parse(current_user.giohang)[product_name] if product
-      { name: product_name, product: product, quantity: quantity }
+      if product
+        quantity = cart[product_name] || 0
+        { name: product_name, product: product, quantity: quantity }
+      else
+        nil
+      end
     end.compact
+
+    @payment_status = params[:payment_status] || "pending"
   end
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
   def create_order

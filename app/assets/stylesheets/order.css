@@ -223,24 +223,28 @@ body {
   .method-description {
     font-size: 14px;
     color: #555;
-    margin-top: -25px;
+    margin-top: -10px;
+
+
   }
   .payment-methods {
     display: flex;
     flex-direction: column;
-    gap: 10px;
+    gap: 15px;
   }
   
   .payment-option {
     display: block;
     width: 100%;
-    padding: 10px;
+    padding: 15px;
     text-align: left;
     background-color: #f9f9f9;
     border: 1px solid #ccc;
     border-radius: 5px;
     cursor: pointer;
-    transition: all 0.3s ease;
+    transition: background-color 0.3s, border-color 0.3s, color 0.3s;
+    text-decoration: none;
+    color: #333;
   }
   
   .payment-option.active {
@@ -249,9 +253,15 @@ body {
     border-color: #28a745;
   }
   
-  .payment-option:hover {
+  .payment-option:hover:not(.disabled) {
     background-color: #218838;
     color: #fff;
+  }
+  
+  .payment-option.disabled {
+    background-color: #e9ecef;
+    color: #6c757d;
+    cursor: not-allowed;
   }
   
   .payment-content {
@@ -260,25 +270,25 @@ body {
     gap: 5px;
   }
   
-  .payment-description {
+  .method-header {
+    font-size: 16px;
+    font-weight: bold;
+  }
+  
+  .method-description p {
+    margin: 0;
     font-size: 14px;
     color: #555;
-    line-height: 1.5;
   }
+  
 
-  .payment-details {
-    margin-top: 20px;
-    border: 1px solid #ccc;
-    padding: 15px;
-    border-radius: 5px;
-    background-color: #f9f9f9;
-  }
+
   
   .payment-row {
     display: flex;
     justify-content: space-between;
     margin-bottom: 10px;
-    font-size: 16px;
+    font-size: 18px;
   }
   
   .payment-row.total {
@@ -379,4 +389,14 @@ body {
 .shipping-option.disabled, .payment-option.disabled {
   cursor: not-allowed;
   opacity: 0.5;
+}
+
+button[disabled], a.payment-option.disabled {
+  pointer-events: none; /* Không cho thao tác */
+  opacity: 0.5; /* Làm mờ */
+  cursor: not-allowed; /* Hiển thị biểu tượng không khả dụng */
+}
+
+.em{
+  width: 97%;
 }

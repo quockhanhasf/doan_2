@@ -6,6 +6,15 @@
   <title>Giỏ hàng</title>
   <%= csrf_meta_tags %>
   <%= stylesheet_link_tag 'order', media: 'all' %>
+  <style>
+    .payment-rowa{
+      display: none;
+    }
+
+    .pa{
+      display: none;
+    }
+  </style>
 </head>
 <body>
   <div class="al">
@@ -17,7 +26,6 @@
       <thead>
         <tr>
           <th>Sản phẩm</th>
-         
           <th>Số lượng</th>
           <th>Đơn giá</th>
           <th>Thành tiền</th>
@@ -27,29 +35,28 @@
         <% @products.each do |item| %>
           <% product = item[:product] %>
           <% quantity = item[:quantity] %>
-          <% product_price = (product.gia * quantity).round %>
-          <tr>
+          <% if product.present? %>
             <tr>
-              <td >
-                <!-- Hiển thị tên sản phẩm và hình ảnh trong cùng một cột -->
+              <td>
                 <div class="sps">
                   <%= image_tag product.hinhanh, alt: product.ten, width: 100 %>
                 </div>
-                  <div class="sps" id="tensp">
-                    <%= product.ten %>
-                  </div>
+                <div class="sps" id="tensp">
+                  <%= product.ten %>
+                </div>
               </td>
-            <td id="soluongsp"><%= "#{quantity.to_i} #{product.donvi}" %></td>
-            <td id="giasp"><%= CurrencyFormatter.format_vnd(product.gia) %></td>
-            <td id="tongtien"><%= CurrencyFormatter.format_vnd(product_price) %></td>
-          </tr>
+              <td id="soluongsp"><%= "#{quantity.to_i} #{product.donvi}" %></td>
+              <td id="giasp"><%= CurrencyFormatter.format_vnd(product.gia) %></td>
+              <td id="tongtien"><%= CurrencyFormatter.format_vnd(product.gia * quantity) %></td>
+            </tr>
+          <% end %>
         <% end %>
       </tbody>
     </table>
 
     <p class="tc">
       Tổng số tiền: 
-      <%= CurrencyFormatter.format_vnd(@products.sum { |item| item[:product].gia * item[:quantity] }) %>
+      <%= CurrencyFormatter.format_vnd(@products.sum { |item| item[:product]&.gia.to_i * item[:quantity].to_i }) %>
     </p>
   <% else %>
     <p>Không có sản phẩm nào được chọn.</p>
@@ -65,7 +72,7 @@
     <div>
       <label for="fullname">Họ và tên:</label>
       <input type="text" id="fullname" name="fullname" placeholder="Nhập họ và tên" 
-value="<%= @current_user&.hoten %>" required class="c">
+        value="<%= @current_user&.hoten %>" required class="c">
          
     </div>
 
@@ -79,7 +86,7 @@ value="<%= @current_user&.hoten %>" required class="c">
 <!-- Nhập số điện thoại -->
     <div>
       <label for="email">Email:</label>
-      <input type="text" id="email" name="email" placeholder="Nhập địa chỉ Email">
+      <input type="text" id="email" name="email" placeholder="Nhập địa chỉ Email" class="em">
     </div>
 
     <!-- Listbox chọn tỉnh/thành -->
@@ -114,47 +121,46 @@ value="<%= @current_user&.hoten %>" required class="c">
     </div>
 
    <!-- Phương thức vận chuyển -->
-    <h2>Phương thức vận chuyển</h2>
-    <div class="shipping-methods">
-      <!-- Hoả tốc -->
-      <button type="button" class="shipping-option active" data-cost="30000" data-method="Hoả tốc">
-        <div class="shipping-content">
-          <div class="method-header">
-            <span><strong>Hoả tốc</strong></span>
-            <span>30,000 VNĐ</span>
-          </div>
-          <div class="method-description">
-            <p class="f">Đảm bảo nhận hàng trong vòng 30 phút hoặc sớm hơn.</p>
-            <p class="f">Đảm bảo nhận hàng trong vòng 1 ngày hoặc trễ hơn nếu khác khu vực.</p>
-          </div>
+  <h2>Phương thức vận chuyển</h2>
+  <div class="shipping-methods">
+    <!-- Hoả tốc -->
+    <button type="button" class="shipping-option active" data-cost="30000" data-method="Hoả tốc" <%= @payment_status == 'success' ? 'disabled' : '' %>>
+      <div class="shipping-content">
+        <div class="method-header">
+          <span><strong>Hoả tốc</strong></span>
+          <span>30,000 VNĐ</span>
         </div>
-      </button>
+        <div class="method-description">
+          <p class="f">Đảm bảo nhận hàng trong vòng 30 phút hoặc sớm hơn.</p>
+          <p class="f">Đảm bảo nhận hàng trong vòng 1 ngày hoặc trễ hơn nếu khác khu vực.</p>
+        </div>
+      </div>
+    </button>
 
-      <!-- Tiết kiệm -->
-      <button type="button" class="shipping-option" data-cost="15000" data-method="Tiết kiệm">
-        <div class="shipping-content">
-          <div class="method-header">
-            <span><strong>Tiết kiệm</strong></span>
-            <span>15,000 VNĐ</span>
-          </div>
-          <div class="method-description">
-            <p class="f">Đảm bảo nhận hàng trong vòng 1 tiếng hoặc sớm hơn.</p>
-            <p class="f">Đảm bảo nhận hàng trong vòng 2 ngày hoặc trễ hơn nếu khác khu vực.</p>
-          </div>
+    <!-- Tiết kiệm -->
+    <button type="button" class="shipping-option" data-cost="15000" data-method="Tiết kiệm" <%= @payment_status == 'success' ? 'disabled' : '' %>>
+      <div class="shipping-content">
+        <div class="method-header">
+          <span><strong>Tiết kiệm</strong></span>
+          <span>15,000 VNĐ</span>
         </div>
-      </button>
-    </div>
+        <div class="method-description">
+          <p class="f">Đảm bảo nhận hàng trong vòng 1 tiếng hoặc sớm hơn.</p>
+          <p class="f">Đảm bảo nhận hàng trong vòng 2 ngày hoặc trễ hơn nếu khác khu vực.</p>
+        </div>
+      </div>
+    </button>
+  </div>
 
     <!-- Input ẩn để lưu giá trị phương thức vận chuyển -->
     <input type="hidden" id="shipping_cost" name="shipping_cost" value="30000">
     <input type="hidden" id="shipping_method" name="shipping_method" value="Hoả tốc">
 
 
-    <!-- Phương thức thanh toán -->
     <h2>Phương thức thanh toán</h2>
     <div class="payment-methods">
       <!-- Thanh toán khi nhận hàng -->
-      <button type="button" class="payment-option active" data-method="Thanh toán khi nhận hàng">
+      <button type="button" class="payment-option active" data-method="Thanh toán khi nhận hàng" <%= @payment_status == 'success' ? 'disabled' : '' %>>
         <div class="payment-content">
           <div class="method-header">
             <span><strong>Thanh toán khi nhận hàng</strong></span>
@@ -165,22 +171,19 @@ value="<%= @current_user&.hoten %>" required class="c">
         </div>
       </button>
 
-      <!-- Thanh toán trực tiếp -->
-     
-      <div class="payment-method">
-        <button type="button" class="payment-option" id="direct_payment_option">
-          <div class="payment-content">
-            <div class="method-header">
-              <span><strong>Thanh toán trực tiếp</strong></span>
-            </div>
-            <div class="method-description">
-              <p>Thanh toán qua mã QR, thẻ tín dụng, chuyển khoản, hoặc ví điện tử.</p>
-            </div>
+      <!-- Thanh toán MoMo -->
+      <button type="button" id="momo_payment_link" class="payment-option <%= @payment_status == 'success' ? 'disabled' : '' %>" data-method="Thanh toán MoMo">
+        <div class="payment-content">
+          <div class="method-header">
+            <span><strong>Thanh toán MoMo</strong></span>
           </div>
-        </button>
-      </div>
-
+          <div class="method-description">
+            <p>Thanh toán qua mã QR, thẻ tín dụng, chuyển khoản, hoặc ví MoMo.</p>
+          </div>
+        </div>
+      </button>
     </div>
+
 
     <!-- Input ẩn để lưu giá trị phương thức thanh toán -->
     <input type="hidden" id="payment_method" name="payment_method" value="Thanh toán khi nhận hàng">
@@ -201,10 +204,20 @@ value="<%= @current_user&.hoten %>" required class="c">
           <%= CurrencyFormatter.format_vnd(30000) %> <!-- Mặc định là 30,000 VNĐ -->
         </span>
       </div>
+      
       <div class="payment-row total">
         <span class="label">Trạng thái thanh toán:</span>
-        <span class="value" id="payment_status" style="color: red;">Chưa thanh toán</span>
+        <span class="value" id="payment_status" style="color: <%= @payment_status == 'success' ? 'green' : 'red' %>;">
+          <%= @payment_status == 'success' ? 'Đã thanh toán' : 'Chưa thanh toán' %>
+        </span>
       </div>
+
+
+      <div class="payment-rowa">
+        <span class="label">Trạng thái:</span>
+        <span class="value" id="trangthai" style="color: red;">Chờ xác nhận</span>
+      </div>
+
       <div class="payment-row total">
         <span class="label">Tổng thanh toán:</span>
         <span class="value" id="total_payment">
@@ -215,16 +228,7 @@ value="<%= @current_user&.hoten %>" required class="c">
       </div>
     </div>
 
-  <!-- Modal thanh toán trực tiếp -->
-  <div id="paymentModal" class="modal">
-    <div class="modal-content">
-      <span class="close">&times;</span>
-      <h2>Thanh toán trực tiếp</h2>
-      <p>Khánh trùm Vĩnh Long</p>
-      <img src="<%= asset_path 'atm.jpg' %>" alt="QR Code" class="qr-code">
-      <button id="paymentSuccess" class="success-button">Thanh toán thành công</button>
-    </div>
-  </div>
+  
 
 
 
@@ -245,7 +249,8 @@ value="<%= @current_user&.hoten %>" required class="c">
     <p><strong>Sản phẩm:</strong><br><pre id="productDetailsModal"></pre></p> <!-- Hiển thị danh sách sản phẩm ở đây -->
     <p><strong>Trạng thái thanh toán:</strong> <span id="paymentStatusModal"></span></p>
     <p><strong>Tổng thanh toán: </strong><span id="totalPaymentModal"></span></p> <!-- Hiển thị danh sách sản phẩm ở đây -->
-    <button type="button" class="order-button" id="orderButton">Đặt hàng</button>
+    <p class="pa"><strong>Trạng thái: </strong><span id="trangthaiModal"></span></p> 
+    <button type="button" class="order-button" id="orderButton">Xác nhận</button>
   </div>
 </div>
 
@@ -254,7 +259,7 @@ value="<%= @current_user&.hoten %>" required class="c">
 
    <!-- Nút xác nhận đặt hàng -->
     
-    <button type="button" class="check-button" id="checkButton">Kiểm tra</button>
+    <button type="button" class="check-button" id="checkButton">Đặt hàng</button>
     
   </form>
   
@@ -268,8 +273,63 @@ value="<%= @current_user&.hoten %>" required class="c">
   <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js" referrerpolicy="no-referrer"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/axios/0.21.1/axios.min.js"></script>
   <script src="<%= asset_path 'apiprovince.js' %>"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/crypto-js/4.1.1/crypto-js.min.js"></script>
+
 
 <script>
+  ////THANH TOÁN
+ document.getElementById("momo_payment_link").addEventListener("click", function (e) {
+  e.preventDefault(); // Ngăn chặn hành vi mặc định
+
+  // Lấy giá trị payment_total từ giao diện
+  let totalElement = document.getElementById("total_payment");
+  let totalValue = totalElement.textContent.trim();
+
+  // Chuyển đổi số tiền từ chuỗi sang số nguyên (loại bỏ ký tự không phải số)
+  let amount = parseInt(totalValue.replace(/[^0-9]/g, ''), 10);
+
+  if (isNaN(amount) || amount <= 0) {
+    alert("Số tiền không hợp lệ!");
+    return;
+  }
+
+  // Chuyển hướng tới thanh_toan_path với amount
+  let thanhToanUrl = `/thanh_toan?amount=${amount}`;
+  window.location.href = thanhToanUrl;
+});
+
+
+
+document.addEventListener("DOMContentLoaded", function () {
+  // Disable buttons with 'disabled' attribute
+  const buttons = document.querySelectorAll(".shipping-option[disabled], .payment-option[disabled]");
+  buttons.forEach((button) => {
+    button.addEventListener("click", function (event) {
+      event.preventDefault(); // Ngăn hành vi mặc định
+      alert("Chức năng này đã bị vô hiệu hóa do trạng thái thanh toán thành công.");
+    });
+  });
+
+  // Disable links with 'disabled' class
+  const disabledLinks = document.querySelectorAll("a.payment-option.disabled");
+  disabledLinks.forEach((link) => {
+    link.addEventListener("click", function (event) {
+      event.preventDefault(); // Ngăn hành vi mặc định
+      alert("Chức năng này đã bị vô hiệu hóa do trạng thái thanh toán thành công.");
+    });
+  });
+});
+
+
+
+
+
+
+
+
+
+
+////////////
   document.addEventListener("DOMContentLoaded", () => {
     const shippingOptions = document.querySelectorAll(".shipping-option");
 
@@ -356,66 +416,52 @@ value="<%= @current_user&.hoten %>" required class="c">
   });
 
 
-  document.addEventListener("DOMContentLoaded", () => {
-    const modal = document.getElementById("paymentModal");
-    const closeModal = document.querySelector(".close");
-    const paymentButton = document.getElementById("paymentSuccess");
-    const paymentStatus = document.getElementById("payment_status");
-    const paymentOptionDirect = document.getElementById("direct_payment_option"); // Nút chọn thanh toán trực tiếp
+  // document.addEventListener("DOMContentLoaded", () => {
+  //   const modal = document.getElementById("paymentModal");
+  //   const closeModal = document.querySelector(".close");
+  //   const paymentButton = document.getElementById("paymentSuccess");
+  //   const paymentStatus = document.getElementById("payment_status");
+  //   //const paymentOptionDirect = document.getElementById("direct_payment_option"); // Nút chọn thanh toán trực tiếp
 
-    // Mở modal khi chọn thanh toán trực tiếp
-    paymentOptionDirect.addEventListener("click", () => {
-      modal.style.display = "block";
-    });
+  //   // Mở modal khi chọn thanh toán trực tiếp
+  //   // paymentOptionDirect.addEventListener("click", () => {
+  //   //   modal.style.display = "block";
+  //   // });
 
-    // Đóng modal
-    closeModal.addEventListener("click", () => {
-      modal.style.display = "none";
-    });
+  //   // Đóng modal
+  //   closeModal.addEventListener("click", () => {
+  //     modal.style.display = "none";
+  //   });
 
-    // Khi thanh toán thành công
-    paymentButton.addEventListener("click", () => {
-      modal.style.display = "none";
-      paymentStatus.textContent = "Đã thanh toán";
-      paymentStatus.style.color = "green";
-    });
+  //   // Khi thanh toán thành công
+  //   paymentButton.addEventListener("click", () => {
+  //     modal.style.display = "none";
+  //     paymentStatus.textContent = "Đã thanh toán";
+  //     paymentStatus.style.color = "green";
+  //   });
 
-    // Đóng modal khi nhấn ngoài modal
-    window.addEventListener("click", (event) => {
-      if (event.target === modal) {
-        modal.style.display = "none";
-      }
-    });
+  //   // Đóng modal khi nhấn ngoài modal
+  //   window.addEventListener("click", (event) => {
+  //     if (event.target === modal) {
+  //       modal.style.display = "none";
+  //     }
+  //   });
+  // });
+
+  
+  document.addEventListener("DOMContentLoaded", function () {
+    const queryParams = new URLSearchParams(window.location.search);
+    const paymentStatus = queryParams.get("payment_status");
+
+    if (paymentStatus === "success") {
+      const statusElement = document.getElementById("trangthai");
+      statusElement.textContent = "Đã thanh toán";
+      statusElement.style.color = "green"; // Thay đổi màu chữ
+    }
   });
 
-  document.addEventListener("DOMContentLoaded", () => {
-  const paymentStatusElement = document.getElementById("payment_status");
-  const shippingOptions = document.querySelectorAll(".shipping-option");
-  const paymentOptions = document.querySelectorAll(".payment-option");
 
-  const checkPaymentStatus = () => {
-    if (paymentStatusElement.textContent.trim() === "Đã thanh toán") {
-      // Vô hiệu hóa phương thức vận chuyển
-      shippingOptions.forEach(option => {
-        option.disabled = true; // Vô hiệu hóa nút
-        option.classList.add("disabled"); // Thêm lớp để thay đổi giao diện (nếu cần)
-      });
 
-      // Vô hiệu hóa phương thức thanh toán
-      paymentOptions.forEach(option => {
-        option.disabled = true; // Vô hiệu hóa nút
-        option.classList.add("disabled"); // Thêm lớp để thay đổi giao diện (nếu cần)
-      });
-    }
-  };
-
-  // Gọi hàm kiểm tra ngay khi trang tải
-  checkPaymentStatus();
-
-  // Nếu trạng thái thanh toán thay đổi, kiểm tra lại
-  const observer = new MutationObserver(checkPaymentStatus);
-  observer.observe(paymentStatusElement, { childList: true });
-});
 
 
 
@@ -437,7 +483,12 @@ value="<%= @current_user&.hoten %>" required class="c">
       const district = document.getElementById("district").value;
       const ward = document.getElementById("ward").value;
       const address = document.getElementById("address").value;
+      const payment_status = document.getElementById("payment_status").textContent.trim();
+      const trangthai = document.getElementById("trangthai").textContent.trim();
+      
       const total_payment = document.getElementById("total_payment").value;
+      
+      
 
       // Lấy các sản phẩm từ bảng
       const products = document.querySelectorAll("table tbody tr");
@@ -483,10 +534,10 @@ value="<%= @current_user&.hoten %>" required class="c">
       document.getElementById("wardModal").innerText = ward;
       document.getElementById("addressModal").innerText = address;
       document.getElementById("productDetailsModal").innerText = productDetails; // Hiển thị thông tin tất cả sản phẩm
-      document.getElementById("paymentStatusModal").innerText = "Chưa thanh toán";  // Cập nhật trạng thái thanh toán
+      document.getElementById("paymentStatusModal").innerText = payment_status;  // Cập nhật trạng thái thanh toán
       document.getElementById("totalPaymentModal").innerText = totalPayment;
+      document.getElementById("trangthaiModal").innerText = trangthai;
       
-
     // Hiển thị modal
     checkInfoModal.style.display = "block";
   });
@@ -506,6 +557,8 @@ value="<%= @current_user&.hoten %>" required class="c">
 
 
 
+
+
 document.getElementById('orderButton').addEventListener('click', function () {
   // Thu thập dữ liệu từ modal
   const fullname = document.getElementById('fullnameModal').textContent.trim();
@@ -516,13 +569,13 @@ document.getElementById('orderButton').addEventListener('click', function () {
   const ward = document.getElementById('wardModal').textContent.trim();
   const specificAddress = document.getElementById('addressModal').textContent.trim();
   const paymentStatus = document.getElementById('paymentStatusModal').textContent.trim();
-  const productDetails = document.getElementById('productDetailsModal').textContent.trim();
+  const trangthai = document.getElementById('trangthaiModal').textContent.trim();
 
   // Gộp địa chỉ
   const address = `${specificAddress}, ${ward}, ${district}, ${province}`;
 
   // Kiểm tra thông tin và tổng thanh toán hợp lệ
-  let totalPayment = document.getElementById('totalPaymentModal').textContent.replace(/[^0-9]/g, ''); 
+  let totalPayment = document.getElementById('totalPaymentModal').textContent.replace(/[^0-9]/g, '');
   totalPayment = parseInt(totalPayment);
 
   if (isNaN(totalPayment)) {
@@ -530,62 +583,72 @@ document.getElementById('orderButton').addEventListener('click', function () {
     return;
   }
 
-  // Tách thông tin sản phẩm từ productDetails
-  const productRegex = /Tên sản phẩm:\s*(.+?)\s+Số lượng:\s*(\d+)/;
-  const match = productDetails.match(productRegex);
+  // Lấy các sản phẩm từ bảng
+  const products = document.querySelectorAll("table tbody tr");
+  let productDetails = [];
 
-  if (!match) {
-    alert('Không thể phân tích dữ liệu sản phẩm.');
+  products.forEach((productRow) => {
+    const productNameElement = productRow.querySelector("#tensp");
+    const quantityElement = productRow.querySelector("#soluongsp");
+
+    if (productNameElement && quantityElement) {
+      const productName = productNameElement.textContent.trim();
+      const quantity = quantityElement.textContent.trim();
+
+      if (productName && quantity) {
+        productDetails.push(`${productName} ${quantity}`);
+      }
+    }
+  });
+
+  if (productDetails.length === 0) {
+    alert('Không có sản phẩm hợp lệ!');
     return;
   }
 
-  const productName = match[1].trim(); // Tên sản phẩm
-  const quantity = match[2].trim(); // Số lượng
-
-  // Tạo object orderData với các giá trị thu thập từ modal
+  // Tạo object orderData
   const orderData = {
     hoten: fullname,
     sdt: phone,
     email: email,
     diachi: address,
-    tensanpham: productName,
-    soluong: parseInt(quantity), // Chuyển sang kiểu số nguyên
     trangthaithanhtoan: paymentStatus,
     tongthanhtoan: totalPayment,
-    ngaydathang: new Date().toISOString(), // Lấy thời gian thực
+    trangthai: trangthai,
+    ngaydathang: new Date().toISOString(),
+    thongtinsanpham: productDetails.join(', ').trim(),
   };
 
-  console.log('Dữ liệu đặt hàng:', orderData);
-
-  // Xử lý gửi dữ liệu qua AJAX
+  // Gửi dữ liệu qua AJAX
+  const csrfToken = document.querySelector('meta[name="csrf-token"]').getAttribute('content');
   fetch('/donhangs', {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json',
+      'X-CSRF-Token': csrfToken,
     },
     body: JSON.stringify(orderData),
   })
-  .then(response => {
-    if (!response.ok) {
-      return response.json().then(error => {
-        console.error('Server error:', error);
-        throw new Error(`HTTP error! status: ${response.status}`);
-      });
-    }
-    return response.json();
-  })
-  .then(data => {
-    console.log('Đặt hàng thành công:', data);
-    alert('Đặt hàng thành công!');
-  })
-  .catch(error => {
-    console.error('Lỗi khi đặt hàng:', error);
-    alert('Có lỗi xảy ra. Vui lòng thử lại!');
-  });
-
+    .then(response => {
+      if (!response.ok) {
+        return response.text().then(text => {
+          console.error('Server error:', text);
+          throw new Error(`HTTP error! status: ${response.status}`);
+        });
+      }
+      return response.json();
+    })
+    .then(data => {
+      console.log('Đặt hàng thành công:', data);
+      alert('Đặt hàng thành công!');
+      // Chuyển hướng về trang chủ
+      window.location.href = '/';
+    })
+    .catch(error => {
+      console.error('Lỗi khi đặt hàng:', error);
+      alert('Có lỗi xảy ra khi đặt hàng.');
+    });
 });
-
-
 
 
 </script>

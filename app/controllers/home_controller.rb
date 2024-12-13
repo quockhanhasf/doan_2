@@ -3,6 +3,8 @@ class HomeController < ApplicationController
 
   def index
     @page_title = "Trang chủ"
+    @user = current_user
+    # sử bạn có logic để tính số lượng tin nhắn chưa đọc
   end
 
   private

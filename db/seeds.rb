@@ -9,6 +9,7 @@
 #   end
 Taikhoan.destroy_all
 Sanpham.destroy_all
+Donhang.destroy_all
 
 
 Taikhoan.create([
@@ -340,6 +341,26 @@ Sanpham.create([
     soluong: 100, # Số lượng ví dụ
     donvi: 'bao',
     hinhanh: 'gaoneptunespec.jpg' # Đảm bảo hình ảnh có trong thư mục assets/images
+  },
+
+  {
+    ten: 'Đùi gà góc tư',
+    loai: 'Thịt',
+    mota: '',
+    gia: 80000,  # Giá ví dụ
+    soluong: 100, # Số lượng ví dụ
+    donvi: 'kg',
+    hinhanh: 'duiga.jpg' # Đảm bảo hình ảnh có trong thư mục assets/images
+  },
+
+  {
+    ten: 'Cánh gà',
+    loai: 'Thịt',
+    mota: '',
+    gia: 100000,  # Giá ví dụ
+    soluong: 100, # Số lượng ví dụ
+    donvi: 'kg',
+    hinhanh: 'canhga.jpg' # Đảm bảo hình ảnh có trong thư mục assets/images
   },
 
   {

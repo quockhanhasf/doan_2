@@ -48,9 +48,11 @@
 
     <!-- Birthdate -->
     <p><strong>Ngày sinh:</strong> 
-      <span id="ngaysinh-text" class="editable" contenteditable="false"><%= @user.ngaysinh %></span>
+      <span id="ngaysinh-text" class="editable" contenteditable="false"><%= @user.ngaysinh.strftime('%d/%m/%Y') if @user.ngaysinh %></span>
+      <input id="ngaysinh-input" type="date" style="display: none;" value="<%= @user.ngaysinh.strftime('%Y-%m-%d') if @user.ngaysinh %>">
       <span class="edit-icon" id="ngaysinh-edit-icon" onclick="editField('ngaysinh')">✏️</span>
     </p>
+
 
     <!-- Email -->
     <p><strong>Email:</strong> 
@@ -78,7 +80,7 @@
     <% end %>
     <!-- New "Sản phẩm" Button -->
     <% if @user.quyen == "admin" %>
-      <%= link_to 'Sản phẩm', sanphams_path, class: 'product-button' %>
+      <%= link_to 'Sản phẩm', sanphams_path, class: 'product-button action-button' %>
     <% end %>
 
   </div> <!-- Kết thúc container -->
@@ -123,17 +125,36 @@
       // Chỉ hiển thị icon của trường đang chỉnh sửa
       const textElement = document.getElementById(field + '-text');
       const iconElement = document.getElementById(field + '-edit-icon');
+      const inputElement = document.getElementById(`${field}-input`);
+      
       
       textElement.contentEditable = "true";  // Cho phép chỉnh sửa trường đã chọn
       textElement.focus();  // Đặt con trỏ vào trường
       iconElement.style.display = 'none';  // Ẩn icon của trường đang chỉnh sửa
+
+      if (field === 'ngaysinh') {
+        // Hiển thị input và ẩn text
+        textElement.style.display = 'none';
+        inputElement.style.display = 'inline';
+        inputElement.focus();
+      } else {
+        // Các trường khác sử dụng contentEditable
+        textElement.contentEditable = "true";
+        textElement.focus();
+      }
+
+
     }
 
     // Hàm xử lý khi người dùng xác nhận
     function confirmUpdate() {
       // Lấy giá trị các trường
+      // Lấy giá trị ngày hiện tại
+      const today = new Date();
       const hoten = document.getElementById('hoten-text').innerText.trim();
-      const ngaysinh = document.getElementById('ngaysinh-text').innerText.trim();
+      const ngaysinhInput = document.getElementById('ngaysinh-input');
+      const ngaysinh = ngaysinhInput.value; // Dạng YYYY-MM-DD
+
       const sdt = document.getElementById('sdt-text').innerText.trim();
       const diachi = document.getElementById('diachi-text').innerText.trim();
 
@@ -145,11 +166,13 @@
 
       // Kiểm tra ngày sinh
       const birthDate = new Date(ngaysinh);
-      const today = new Date();
+      const formattedBirthDate = birthDate.toLocaleDateString('vi-VN', { year: 'numeric', month: '2-digit', day: '2-digit' });
+
       if (!ngaysinh || isNaN(birthDate) || birthDate >= today) {
         alert("Ngày sinh phải hợp lệ và trước ngày hiện tại.");
         return;
       }
+
 
       // Kiểm tra số điện thoại
       const phoneRegex = /^\d{10,15}$/;
@@ -191,6 +214,7 @@
               // Khóa chỉnh sửa
               const fields = document.querySelectorAll('.editable');
               fields.forEach(field => field.contentEditable = 'false');
+              
             } else {
               alert("Cập nhật thất bại: " + result.message);
             }

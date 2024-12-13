@@ -10,19 +10,19 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.2].define(version: 2024_12_03_135057) do
+ActiveRecord::Schema[7.2].define(version: 2024_12_10_045118) do
   create_table "donhangs", force: :cascade do |t|
     t.string "hoten"
     t.string "sdt"
     t.string "email"
     t.text "diachi"
-    t.string "tensanpham"
-    t.integer "soluong"
     t.string "trangthaithanhtoan"
     t.integer "tongthanhtoan"
     t.datetime "ngaydathang"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.string "trangthai"
+    t.string "thongtinsanpham"
   end
 
   create_table "messages", force: :cascade do |t|

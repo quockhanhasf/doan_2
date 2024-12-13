@@ -19,7 +19,7 @@
   <div class="menu">
     <%= link_to 'Trang Chủ', root_path, id: 'homeLink', data: { turbo: false } %>
     <div class="search-bar">
-      <input type="text" placeholder="Tìm kiếm sản phẩm..." id="searchInput" class="text_tim">
+      <input type="text" placeholder="Tìm kiếm sản phẩm..." id="searchInput" class="text_tim" oninput="searchProduct()">
       <button class="btn_tim" onclick="searchProduct()">Tìm Kiếm</button>
     </div>
 
@@ -50,6 +50,25 @@
       <% end %>
     </div>
 
+    <div class="giaohang-container">
+      <% if current_user %>
+        <% if @user.quyen == "admin" %>
+          <%= link_to image_tag('delivery.jpg', alt: 'Giaohang', class: 'giaohang-icon'), giaohang_index_path  %>
+           <!-- Hiển thị số mũ tin nhắn chưa đọc -->
+        <% else %>
+          <%= link_to image_tag('delivery.jpg', alt: 'Giaohang', class: 'giaohang-icon'), giaidoan_index_path  %>
+           <!-- Hiển thị số mũ tin nhắn chưa đọc -->
+        <% end %>
+      <% else %>
+        <a href="#" onclick="showLoginAlert(event)">
+          <%= image_tag('delivery.jpg', alt: 'Giaohang', class: 'giaohang-icon') %>
+        </a>
+      <% end %>
+    </div>
+
+
+   
+
     <% if current_user %>
       <%= link_to current_user.hoten, user_path(current_user), class: 'user-link' %> <!-- Redirect to user's profile -->
     <% else %>
@@ -67,6 +86,14 @@
       <p>Rau, củ, quả</p>
     </div>
     <div class="category-item">
+      <%= image_tag 'thit.jpg', alt: 'Thịt', class: 'category-image' %>
+      <p>Củ</p>
+    </div>
+    <div class="category-item">
+      <%= image_tag 'thit.jpg', alt: 'Thịt', class: 'category-image' %>
+      <p>Quả</p>
+    </div>
+    <div class="category-item">
       <%= image_tag 'sua.jpg', alt: 'Sữa tươi', class: 'category-image' %>
       <p>Sữa tươi</p>
     </div>
@@ -78,6 +105,8 @@
       <%= image_tag 'thit.jpg', alt: 'Thịt', class: 'category-image' %>
       <p>Thịt</p>
     </div>
+
+    
     <!-- Thêm các danh mục khác tương tự -->
   </div>
 
@@ -172,7 +201,68 @@
     </footer>
 
     <%= javascript_include_tag 'application' %>
-    <script>
+<script>
+
+  function formatCurrency(price) {
+    if (isNaN(price)) return price; // Kiểm tra nếu price không phải là số hợp lệ
+    // Đảm bảo price là số nguyên, và format đúng theo tiền tệ Việt Nam
+    return price.toLocaleString('vi-VN', { style: 'currency', currency: 'VND' }).replace('₫', ' VNĐ');
+  }
+
+
+  function searchProduct() {
+    const query = document.getElementById('searchInput').value.trim(); // Lấy từ khóa tìm kiếm
+
+    // Gửi yêu cầu AJAX đến server
+    fetch(`/sanpham/search?query=${encodeURIComponent(query)}`, {
+      method: 'GET',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+    })
+      .then((response) => response.json())
+      .then((products) => {
+        // Làm mới phần hiển thị sản phẩm
+        const productSection = document.getElementById('productSection');
+        productSection.innerHTML = ''; // Xóa toàn bộ sản phẩm cũ
+
+        if (products.length === 0) {
+          productSection.innerHTML = '<p>Không tìm thấy sản phẩm nào.</p>';
+          return;
+        }
+        
+
+        products.forEach((product) => {
+          const productCard = `
+            <div class="product-card">
+              <img src="${product.hinhanh ? '/assets/' + product.hinhanh : ''}" alt="${product.ten}" class="product-image">
+              <div class="product-info">
+                <h3 class="product-name">${product.ten}</h3>
+                <p class="product-price">
+                  ${formatCurrency(parseInt(product.gia))} / ${product.donvi || 'Đơn vị không xác định'}
+                </p>
+                <button class="add-to-cart" 
+                  data-product-name="${product.ten}" 
+                  data-product-image="${product.hinhanh}" 
+                  data-product-unit="${product.donvi}" 
+                  data-product-stock="${product.soluong}" 
+                  onclick="openAddToCartModal(this)">
+                  Thêm vào giỏ hàng
+                </button>
+              </div>
+            </div>`;
+          productSection.innerHTML += productCard; // Thêm sản phẩm vào danh sách
+        });
+      })
+      .catch((error) => {
+        console.error('Lỗi khi tìm kiếm sản phẩm:', error);
+      });
+  }
+
+
+
+      
+
       const isLoggedIn = <%= current_user.present? ? 'true' : 'false' %>;
 
       const loginButton = document.querySelector('.login-button');
@@ -240,11 +330,22 @@
       const oldPreview = document.getElementById('productPreview');
       if (oldPreview) oldPreview.remove();
 
+      // Kiểm tra và xử lý đường dẫn hình ảnh
+      // Nếu đường dẫn hình ảnh không phải là URL đầy đủ, thêm "/assets/" vào trước
+      let imageSrc;
+      if (productImage.startsWith('http')) {
+        // Nếu là URL đầy đủ, giữ nguyên
+        imageSrc = productImage;
+      } else {
+        // Nếu không phải URL, thêm '/assets/' vào trước
+        imageSrc = productImage.startsWith('/assets/') ? productImage : '/assets/' + productImage;
+      }
+
       // Tạo nội dung mới cho modal
       const productPreview = document.createElement('div');
       productPreview.id = 'productPreview';
       productPreview.innerHTML = `
-        <img src="${productImage}" alt="${productName}" style="width: 100px; height: auto; display: block; margin: 0 auto;">
+        <img src="${imageSrc}" alt="${productName}" style="width: 100px; height: auto; display: block; margin: 0 auto;">
         <h2 style="text-align: center;">${productName}</h2>
         <p style="text-align: center;">Đơn vị: ${productUnit}</p> <!-- Hiển thị đơn vị -->
       `;
@@ -267,6 +368,8 @@
       // Hiển thị modal
       addToCartModal.style.display = 'flex';
     }
+
+
 
 
     // Hàm đóng modal

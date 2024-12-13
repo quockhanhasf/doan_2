@@ -17,12 +17,38 @@ Rails.application.routes.draw do
   post "cart/add_to_cart", to: "cart#add_to_cart", as: "add_to_cart"
   post "cart/remove_from_cart", to: "cart#remove_from_cart", as: "remove_from_cart"
   post "cart/update_cart", to: "cart#update_cart", as: "update_cart"
+  post "/set_selected_products", to: "cart#set_selected_products"
+
+   # Tìm sản phẩm
+   get "sanpham/search", to: "sanphams#search"
+
+
 
 
   # Đặt hàng
   get "/order", to: "cart#order", as: "order" # Truy cập qua GET
   post "/cart/create_order", to: "cart#create_order", as: "create_order"
   resources :donhangs, only: [ :create ]
+
+  resources :giaidoan, only: [ :index ]
+
+  resources :giaohang, only: [ :index ] do
+    member do
+      patch :xacnhan
+    end
+  end
+
+
+
+
+
+
+  # Thanh toán
+
+  get "/thanh_toan", to: "payments#thanh_toan", as: "thanh_toan"
+  get "/payment/success", to: "payments#payment_success", as: "payment_success"
+  post "/payment/webhook", to: "payments#payment_webhook", as: "payment_webhook"
+
 
 
 
@@ -37,8 +63,9 @@ Rails.application.routes.draw do
   post "register", to: "registrations#create"
   post "verify_registration_code", to: "registrations#verify_code"
 
-  resources :sanphams, only: [ :index ]
-  resources :sanphams, only: [ :update, :destroy ]
+
+  # Quản lý sản phẩm
+  resources :sanphams, only: [ :index, :create, :update, :destroy ]
 
 
   # Nhắn tin

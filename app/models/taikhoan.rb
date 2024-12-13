@@ -3,6 +3,10 @@ class Taikhoan < ApplicationRecord
   has_many :sent_messages, class_name: "Message", foreign_key: "taikhoan_id", dependent: :destroy
   has_many :received_messages, class_name: "Message", foreign_key: "recipient_id", dependent: :destroy
 
+  def admin?
+    quyen == "admin"
+  end
+
   private
 
   def set_default_avatar_url

@@ -5,6 +5,11 @@ body {
   padding: 20px;
 }
 
+.d{
+  margin-left: 300px;
+  margin-bottom: 80px;
+}
+
 
 
 .messages-container {
@@ -54,35 +59,58 @@ h2{
   font-weight: bold;
 }
 
-.chat-box {
-  max-height: 400px;
-  overflow-y: auto;
-  margin-bottom: 20px;
-  padding: 10px;
-  background: #f4f4f9;
-  border: 1px solid #ddd;
-  border-radius: 8px;
-}
+
 
 .message {
-  margin-bottom: 10px;
+  margin-top: -10px;
   padding: 10px;
   border-radius: 8px;
   background-color: #e9ecef;
-  width: 190px;
+  width: 220px;
+  margin-bottom: 4px;  /* Giữ nguyên khoảng trắng và xuống dòng tự động */
 }
 
-.message.from-user {
-  background-color: #d1e7dd;
-  text-align: left;
-  margin-left: 30px;
+/* Đảm bảo hộp chat hiển thị theo chiều dọc */
+.chat-box {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
 }
 
+/* Tin nhắn từ Admin sẽ hiển thị bên trái */
 .message.from-admin {
-  background-color: #e2e3e5;
-  text-align: left;
-  margin-left: 700px;
+  align-self: flex-start; /* Tin nhắn của admin nằm bên trái */
+  background-color: #f1f1f1;
+  padding: 10px;
+  border-radius: 10px;
+  max-width: 60%;
+  margin-left: 10px;  /* Khoảng cách từ cạnh trái */
 }
+
+/* Tin nhắn từ User sẽ hiển thị bên phải */
+.message.from-user {
+  align-self: flex-end; /* Tin nhắn của user nằm bên phải */
+  background-color: #d1e7fd;
+  padding: 10px;
+  border-radius: 10px;
+  max-width: 60%;
+  margin-right: 10px; /* Khoảng cách từ cạnh phải */
+}
+
+/* Đảm bảo không có margin hoặc padding thừa trong tin nhắn */
+.message p {
+  margin: 0;
+  word-wrap: break-word;
+  white-space: pre-wrap;
+}
+
+/* Điều chỉnh cách hiển thị tên người gửi */
+.message strong {
+  display: block;
+  margin-bottom: 5px;
+}
+
+
 
 form textarea {
   width: 100%;

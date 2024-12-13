@@ -1,0 +1,389 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Thông tin đơn hàng</title>
+  <%= csrf_meta_tags %>
+  <%= stylesheet_link_tag '', media: 'all' %>
+    <style>
+        /* General Styles */
+body {
+  font-family: 'Arial', sans-serif;
+  line-height: 1.6;
+  margin: 0;
+  padding: 0;
+  background-color: #f9f9f9;
+  color: #333;
+}
+.a{
+    display: none;
+}
+.tra{
+  display: flex; /* Đảm bảo các thành phần bên trong canh chỉnh linh hoạt */
+    align-items: center; /* Căn giữa theo chiều dọc (nếu cần) */
+    justify-content: flex-end; /* Căn trái theo chiều ngang */
+    margin-left: 0; /* Đặt phần lề trái bằng 0 nếu có khoảng cách không mong muốn */
+    text-align: left; 
+}
+
+.tong{
+  display: flex; /* Đảm bảo các thành phần bên trong canh chỉnh linh hoạt */
+    align-items: center; /* Căn giữa theo chiều dọc (nếu cần) */
+    justify-content: flex-end; /* Căn trái theo chiều ngang */
+    margin-left: 0; /* Đặt phần lề trái bằng 0 nếu có khoảng cách không mong muốn */
+    text-align: left; 
+    
+}
+.giatong{
+     display: flex; /* Đảm bảo các thành phần bên trong canh chỉnh linh hoạt */
+    align-items: center; /* Căn giữa theo chiều dọc (nếu cần) */
+    justify-content: flex-end; /* Căn trái theo chiều ngang */
+    margin-left: 0; /* Đặt phần lề trái bằng 0 nếu có khoảng cách không mong muốn */
+    text-align: left; 
+    font-size: 20px;
+    font-style: bold;
+    text-decoration: underline;
+}
+
+h2 {
+  font-size: 1.5rem;
+  margin-bottom: 1rem;
+  color: #555;
+}
+
+label {
+  font-weight: bold;
+  display: block;
+  margin-bottom: 0.5rem;
+}
+
+button {
+  padding: 10px 20px;
+  background-color: #007bff;
+  border: none;
+  border-radius: 5px;
+  color: #fff;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+
+button:hover {
+  background-color: #0056b3;
+}
+
+a {
+  text-decoration: none;
+  color: #007bff;
+}
+
+a:hover {
+  text-decoration: underline;
+}
+
+/* Layout */
+.order-info {
+  max-width: 800px;
+  margin: 20px auto;
+  padding: 20px;
+  background: #fff;
+  border-radius: 8px;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+}
+
+.section {
+  margin-bottom: 20px;
+}
+
+.row {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 10px;
+}
+
+.col {
+  flex: 1;
+}
+
+.col:not(:last-child) {
+  margin-right: 10px;
+}
+
+/* Product Info */
+.product-info {
+  margin-top: 20px;
+  padding-top: 20px;
+  border-top: 1px solid #ddd;
+}
+
+.product-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 10px 0;
+  border-bottom: 1px solid #eee;
+}
+
+.product-image {
+  width: 100px;
+  height: 100px;
+  object-fit: cover;
+  border-radius: 8px;
+  border: 1px solid #ddd;
+}
+
+.details {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  width: 100%;
+  padding-left: 15px;
+}
+
+.details h4 {
+  margin: 0;
+  flex: 1;
+  font-size: 1rem;
+  color: #333;
+}
+
+.details .price,
+.details .quantity,
+.details .total {
+  margin-left: 15px;
+  font-size: 0.9rem;
+  color: #666;
+  white-space: nowrap;
+}
+
+.details .price {
+  font-weight: bold;
+  color: #0056b3;
+}
+
+.details .total {
+  color: #27ae60;
+}
+
+/* General Styles */
+.delivery-status {
+  max-width: 900px;
+  margin: 20px auto;
+  text-align: center;
+  font-family: Arial, sans-serif;
+}
+
+.delivery-status h3 {
+  font-size: 1.2rem;
+  color: #007b5e;
+  margin-bottom: 10px;
+}
+
+.status-bar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  position: relative;
+  gap: 10px; /* Khoảng cách giữa các giai đoạn */
+}
+
+.status-bar::before {
+  content: '';
+  position: absolute;
+  top: 50%;
+  left: 5%;
+  right: 5%;
+  height: 2px;
+  background: #ccc;
+
+}
+
+
+
+.status-item {
+  position: relative;
+  text-align: center;
+  z-index: 2;
+  align-items: center; /* Đảm bảo biểu tượng và văn bản căn giữa */
+  flex: 1; /* Đảm bảo chia đều không gian giữa các trạng thái */
+  
+ 
+  
+}
+
+.status-icon {
+  display: inline-block;
+  width: 20px;
+  height: 20px;
+  
+  line-height: 20px;
+  border-radius: 50%;
+  background-color: #ccc;
+  color: #fff;
+  font-size: 12px;
+  font-weight: bold;
+  
+}
+
+.status-text {
+  display: block;
+  margin-top: 40px;
+  font-size: 0.9rem;
+  color: #666;
+}
+
+.status-item.completed .status-icon {
+  background-color: #007b5e;
+}
+
+.status-item.active .status-icon {
+  background-color: #007b5e; /* Màu sáng cho trạng thái hiện tại */
+  color: #fff;
+  border: 2px solid #007b5e;
+}
+
+.status-item.completed .status-icon {
+  background-color: #007b5e; /* Màu đã hoàn thành */
+  color: #fff;
+}
+
+.status-item.active .status-text {
+  color: #007b5e;
+}
+
+.status-item.completed .status-text {
+  color: #666;
+}
+
+
+
+
+    </style>
+</head>
+<body>
+  
+
+  <% @donhangs.each do |donhang| %>
+    <div class="order-info">
+            <!-- Address and customer info -->
+            <div class="section address">
+                <h2>Địa chỉ nhận hàng</h2>
+                <div class="row">
+                <div class="col">
+                    <label for="hoten">Họ tên: <span><%= donhang.hoten %></span></label>     
+                </div>
+                <div class="col">
+                    <label for="sdt">Số điện thoại: <span><%= donhang.sdt %></span></label> 
+                </div>
+                <div class="row">
+                    <label for="email">Email: <span><%= donhang.email %></span></label> 
+                </div>
+                </div>
+                <div class="row">
+                <div class="col">
+                    <label for="diachi">Địa chỉ</label>
+                    <span><%= donhang.diachi %></span>
+                </div>
+                </div>
+                <% if donhang.trangthai != 'Đã xác nhận' %>
+                    <button>Cập nhật</button>
+                <% end %>
+            </div>
+
+        <div class="section product-info">
+        <% donhang.thongtinsanpham.split(',').each do |sanpham_ten_soluong| %>
+            <div class="product-item">
+            <!-- Tách tên sản phẩm và số lượng, đơn vị từ chuỗi "Rau muống 7 kg" -->
+            <% match = sanpham_ten_soluong.strip.match(/(.+)\s(\d+)\s?(kg|bao|thùng)/) %>
+            
+            <% if match %>
+                <% sanpham_ten = match[1] %>   <!-- Lấy tên sản phẩm -->
+                <% soluong = match[2].to_i %>  <!-- Lấy số lượng -->
+                <% donvi = match[3] %>         <!-- Lấy đơn vị (kg hoặc bao) -->
+
+                <!-- Tìm sản phẩm trong bảng Sanpham theo tên -->
+                <% sanpham = Sanpham.find_by(ten: sanpham_ten) %>
+
+                <% if sanpham %>
+                <!-- Hiển thị hình ảnh và thông tin sản phẩm -->
+                <div class="details">
+                    <%= image_tag asset_path(sanpham.hinhanh), alt: sanpham.ten, class: 'product-image' %>
+                    <h4><%= sanpham.ten %></h4>
+                    <span class="price">
+                        <%= number_to_currency(sanpham.gia, unit: 'VNĐ', separator: '.', delimiter: '.', precision: 0, format: "%n %u") %>
+                    </span>
+                    <span class="quantity">Số lượng: <%= soluong %> <%= donvi %></span>
+                    <span class="total">
+                        Tổng: <%= number_to_currency(sanpham.gia * soluong, unit: 'VNĐ', separator: '.', delimiter: '.', precision: 0, format: "%n %u") %>
+                    </span>
+                </div>
+                <% else %>
+                <span>Sản phẩm không tìm thấy.</span>
+                <% end %>
+            <% else %>
+                <span>Thông tin sản phẩm không hợp lệ.</span>
+            <% end %>
+            </div>
+        <% end %>
+    </div>
+
+    <!-- Order Summary -->
+    <div class="section order-summary">
+        <label for="tongthanhtoan" class="tong">Tổng thanh toán (Kèm phí vận chuyển)</label>
+        <span class="tra" style="color: <%= donhang.trangthaithanhtoan == 'Đã thanh toán' ? 'green' : 'red' %>;">
+        <%= donhang.trangthaithanhtoan %>
+        <span class="giatong">
+           <%= number_to_currency(donhang.tongthanhtoan, unit: 'VNĐ', separator: '.', delimiter: '.', precision: 0, format: "%n %u") %>
+        </span>
+    </div>
+
+
+      <div class="section order-status">
+        <label for="trangthai" class="a">Trạng thái</label>
+        <span class="a"><%= donhang.trangthai || "Chờ xác nhận" %></span>
+      </div>
+
+    <div class="delivery-status">
+      <h3>Ngày giao hàng dự kiến:</h3>
+      <div class="status-bar">
+           <!-- Trạng thái: Chờ xác nhận -->
+          <div class="status-item <%= donhang.trangthai == 'Chờ xác nhận' ? 'active' : (donhang.trangthai != 'Chờ xác nhận' ? 'completed' : '') %>">
+          <span class="status-icon">⦿</span>
+          <span class="status-text">Chờ xác nhận</span>
+          </div>
+
+          <!-- Trạng thái: Đã xác nhận -->
+          <div class="status-item <%= donhang.trangthai == 'Đã xác nhận' ? 'active' : (['Đơn hàng được vận chuyển', 'Đang trên đường giao đến bạn', 'Đã giao hàng'].include?(donhang.trangthai) ? 'completed' : '') %>">
+          <span class="status-icon">⦿</span>
+          <span class="status-text">Đã xác nhận</span>
+          </div>
+
+          <!-- Trạng thái: Đơn hàng được vận chuyển -->
+          <div class="status-item <%= donhang.trangthai == 'Đơn hàng được vận chuyển' ? 'active' : (['Đang trên đường giao đến bạn', 'Đã giao hàng'].include?(donhang.trangthai) ? 'completed' : '') %>">
+          <span class="status-icon">⦿</span>
+          <span class="status-text">Đang vận chuyển</span>
+          </div>
+
+          <!-- Trạng thái: Đang trên đường giao đến bạn -->
+          <div class="status-item <%= donhang.trangthai == 'Đang trên đường giao đến bạn' ? 'active' : (donhang.trangthai == 'Đã giao hàng' ? 'completed' : '') %>">
+          <span class="status-icon">⦿</span>
+          <span class="status-text">Đang trên đường giao đến bạn</span>
+          </div>
+
+          <!-- Trạng thái: Đã giao hàng -->
+          <div class="status-item <%= donhang.trangthai == 'Đã giao hàng' ? 'active' : '' %>">
+          <span class="status-icon">⦿</span>
+          <span class="status-text">Đã giao hàng</span>
+          </div>
+      </div>
+    </div>
+
+
+  <% end %>
+
+  <%= link_to 'Trở lại trang chủ', root_path %>
+
+    
+
+</body>
+</html>

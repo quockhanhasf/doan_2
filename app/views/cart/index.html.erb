@@ -84,9 +84,14 @@
     <p class="empty-cart">Giỏ hàng của bạn hiện đang trống.</p>
   <% end %>
 
+  <!-- Hiển thị nút đặt hàng nếu giỏ hàng không trống -->
   <% if current_user.giohang.present? && !JSON.parse(current_user.giohang).empty? %>
     <button class="order-button" type="button" onclick="redirectToOrderPage()">🛒 Đặt hàng</button>
+  <% else %>
+    <button class="order-button" type="button" disabled>🛒 Giỏ hàng trống</button>
   <% end %>
+
+
 </div>
 
 
@@ -113,13 +118,85 @@
 <script>  
   function redirectToOrderPage() {
     const selectedProducts = getSelectedProducts();
-    if (selectedProducts.length > 0) {
-      const url = `/order?selected_products=${encodeURIComponent(JSON.stringify(selectedProducts))}`;
-      window.location.href = url;
-    } else {
-      alert("Vui lòng chọn ít nhất một sản phẩm để đặt hàng.");
+
+    if (selectedProducts.length === 0) {
+        alert('Vui lòng chọn ít nhất một sản phẩm để đặt hàng.');
+        return;
     }
+
+    // Gửi danh sách sản phẩm đã chọn qua AJAX để lưu vào session
+    fetch('/set_selected_products', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+            'X-CSRF-Token': document.querySelector('meta[name="csrf-token"]').content,
+        },
+        body: JSON.stringify({ selected_products: selectedProducts }),
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.success) {
+            // Chuyển hướng đến trang đặt hàng
+            window.location.href = '/order';
+        } else {
+            alert('Có lỗi xảy ra khi lưu danh sách sản phẩm.');
+        }
+    })
+    .catch(error => {
+        console.error('Lỗi:', error);
+        alert('Không thể thực hiện yêu cầu.');
+    });
+}
+
+
+  function getSelectedProducts() {
+    const selectedProducts = [];
+    const productCheckboxes = document.querySelectorAll(".product-checkbox:checked");
+    productCheckboxes.forEach((checkbox) => {
+      const productName = checkbox.getAttribute("data-product");
+      selectedProducts.push(productName);
+    });
+    return selectedProducts;
   }
+
+
+
+
+
+///////////
+  function toggleSelectAll(selectAllCheckbox) {
+     // Lấy tất cả các checkbox con
+    const checkboxes = document.querySelectorAll(".product-checkbox");
+    // Cập nhật trạng thái của tất cả các checkbox con dựa trên trạng thái của "Chọn tất cả"
+    checkboxes.forEach((checkbox) => {
+      checkbox.checked = selectAllCheckbox.checked;
+    });
+  }
+
+  document.addEventListener("DOMContentLoaded", () => {
+    // Lấy tất cả checkbox con và checkbox "Chọn tất cả"
+    const selectAllCheckbox = document.getElementById("selectAll");
+    const checkboxes = document.querySelectorAll(".product-checkbox");
+
+    // Gán sự kiện thay đổi cho tất cả checkbox con
+    checkboxes.forEach((checkbox) => {
+      checkbox.addEventListener("change", () => {
+        // Kiểm tra nếu tất cả checkbox con đều được chọn
+        const allChecked = Array.from(checkboxes).every((cb) => cb.checked);
+        // Nếu tất cả đều được chọn, "Chọn tất cả" cũng được chọn
+        selectAllCheckbox.checked = allChecked;
+        // Nếu có bất kỳ checkbox con nào bị bỏ chọn, bỏ chọn "Chọn tất cả"
+        if (!checkbox.checked) {
+          selectAllCheckbox.checked = false;
+        }
+      });
+    });
+  });
+
+
+
+
+
 
   
   document.addEventListener("DOMContentLoaded", () => {
@@ -227,20 +304,7 @@
     closeUpdateProductModal(); // Đóng modal
   }
 
-  function toggleSelectAll(selectAllCheckbox) {
-    const checkboxes = document.querySelectorAll(".product-checkbox");
-    checkboxes.forEach((checkbox) => {
-      checkbox.checked = selectAllCheckbox.checked;
-    });
-  }
-
-function getSelectedProducts() {
-  const selectedProducts = [];
-  document.querySelectorAll(".product-checkbox:checked").forEach((checkbox) => {
-    selectedProducts.push(checkbox.getAttribute("data-product"));
-  });
-  return selectedProducts;
-}
+  
 
 
 </script>

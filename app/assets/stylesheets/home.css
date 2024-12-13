@@ -76,7 +76,7 @@ body{
     display: inline-block; /* Ensures it aligns with other inline elements */
    
     margin-left: 20px;
-    margin-right: 80px;
+    margin-right: 20px;
     transition: background-color 0.3s ease;
     cursor: pointer; /* Thể hiện rằng đây là phần có thể click được */
   }
@@ -89,11 +89,10 @@ body{
   .mess-container {
     position: relative;
     display: inline-block; /* Ensures it aligns with other inline elements */
-    margin-right: 40px;
-   
-    
-    transition: background-color 0.3s ease;
+    margin-right: 10px;
+   transition: background-color 0.3s ease;
     cursor: pointer; /* Thể hiện rằng đây là phần có thể click được */
+    
   }
 
   .mess-container:hover {
@@ -101,11 +100,29 @@ body{
      transform: scale(1.05);
   }
 
-  .messenger-icon{
+  
+  
+
+  .giaohang-container {
+    position: relative;
+    display: inline-block; /* Ensures it aligns with other inline elements */
+    margin-right: 30px;
+   
+    
+    transition: background-color 0.3s ease;
+    cursor: pointer; /* Thể hiện rằng đây là phần có thể click được */
+  }
+
+  .giaohang-container:hover {
+    background-color: #e0f7fa; /* Màu nền khi hover */
+     transform: scale(1.05);
+  }
+  
+  .giaohang-icon{
     width: 38px;
     height: auto;
   }
-  
+
   /* Cart icon styling */
   .cart-icon {
     width: 38px;
@@ -440,4 +457,20 @@ body{
     width: 40px; /* Adjust size as needed */
     height: auto;
   }
+
+  .giaohang-badge {
+    position: absolute;
+    top: -10px; /* Điều chỉnh vị trí */
+    right: -10px; /* Điều chỉnh vị trí */
+    background-color: red;
+    color: white;
+    border-radius: 50%;
+    font-size: 12px; /* Kích thước */
+    font-weight: bold;
+    padding: 2px 6px;
+  }
+  
+  
+ 
+  
   
